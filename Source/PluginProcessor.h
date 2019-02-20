@@ -12,6 +12,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Identifiers.h"
+#include "Filter.h"
 
 //==============================================================================
 /**
@@ -58,6 +59,7 @@ public:
 
 private:
 	AudioProcessorValueTreeState mParameters;
+	Filter mFilter;
 
 	float* mFcParameter;
 	float* mQParameter;

@@ -41,6 +41,5 @@ void FilterAudioProcessorEditor::paint (Graphics& g)
 
 void FilterAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
+	FlexBox masterBox;
 }
