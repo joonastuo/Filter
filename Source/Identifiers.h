@@ -14,9 +14,10 @@ namespace IDs {
 
 	#define DECLARE_ID(name) const juce::Identifier name (#name);
 
-	DECLARE_ID(fc) // Center frequency
-	DECLARE_ID(Q)  // Quality factor
-	DECLARE_ID(Gain)  // Gain
+	DECLARE_ID(fc)		// Center frequency
+	DECLARE_ID(Q)		// Quality factor
+	DECLARE_ID(gain)	// Gain
+	DECLARE_ID(fs)		// Sampling frequency
 
 	#undef DECLARE_ID
 }
