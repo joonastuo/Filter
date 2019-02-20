@@ -18,12 +18,13 @@
 class MagView    : public Component
 {
 public:
-    MagView();
+    MagView(AudioProcessorValueTreeState& vt);
     ~MagView();
 
     void paint (Graphics&) override;
     void resized() override;
 
 private:
+	AudioProcessorValueTreeState& mParameters;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MagView)
 };

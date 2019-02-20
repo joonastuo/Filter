@@ -27,10 +27,14 @@ public:
     //==============================================================================
     void paint (Graphics&) override;
     void resized() override;
+	FlexItem splitComponent(Component& c, int width, int height);
+	FlexItem splitVertical(Component& c, int height);
+	FlexItem splitHorizontal(Component&, int width);
 
 private:
     FilterAudioProcessor& processor;
 	AudioProcessorValueTreeState& mParameters;
+	MagView mMagView;
 
 	Slider mFcSlider;
 	Slider mGainSlider;
