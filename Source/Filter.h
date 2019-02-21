@@ -27,11 +27,10 @@ public:
 private:
 	AudioProcessorValueTreeState& mParameters;
 
-	CachedValue<int> mFilterType;
 	CachedValue<float> mFc;
 	CachedValue<float> mGain;
-	CachedValue<float> mQ;
 	CachedValue<float> mFs;
+
 	float mPrevXh = 0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Filter)

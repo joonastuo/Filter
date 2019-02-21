@@ -16,10 +16,9 @@
 //==============================================================================
 Filter::Filter(AudioProcessorValueTreeState& vt) : mParameters(vt)
 {
+	mFs.referTo(mParameters.state, IDs::fs, nullptr);
 	mFc.referTo(mParameters.state, IDs::fc, nullptr);
 	mGain.referTo(mParameters.state, IDs::gain, nullptr);
-	mQ.referTo(mParameters.state, IDs::Q, nullptr);
-	mFs.referTo(mParameters.state, IDs::fs, nullptr);
 }
 
 Filter::~Filter()
