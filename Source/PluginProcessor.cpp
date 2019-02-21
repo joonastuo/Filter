@@ -28,8 +28,10 @@ FilterAudioProcessor::FilterAudioProcessor()
 {
 	NormalisableRange<float> fcRange(20.f, 20000.f);
 	NormalisableRange<float> gainRange(1.f, 5.f);
+	NormalisableRange<float> selectRange(0, 2);
 	mParameters.createAndAddParameter("fc", "fc", String(), fcRange, 1000.f, nullptr, nullptr);
 	mParameters.createAndAddParameter("gain", "Gain", String(), gainRange, 1.f, nullptr, nullptr);
+	mParameters.createAndAddParameter("selectFilter", "SelectFilter" , String(), selectRange, 0, nullptr, nullptr);
 	mParameters.state = ValueTree("FilterParameters");
 	mParameters.state.setProperty(IDs::fs, 44100.f, nullptr);
 }
@@ -159,9 +161,22 @@ void FilterAudioProcessor::updateFilter()
 	float fc = *mParameters.getRawParameterValue("fc");
 	float gain = *mParameters.getRawParameterValue("gain");
 	float fs = mParameters.state[IDs::fs];
+	float selectFilter = *mParameters.getRawParameterValue("selectFilter");
 
-	mStateVariableFilter.state->type = dsp::StateVariableFilter::Parameters<float>::Type::lowPass;
 	mStateVariableFilter.state->setCutOffFrequency(fs, fc, gain);
+
+	if (selectFilter == 0)
+	{
+		mStateVariableFilter.state->type = dsp::StateVariableFilter::Parameters<float>::Type::lowPass;
+	}
+	else if (selectFilter == 1)
+	{
+		mStateVariableFilter.state->type = dsp::StateVariableFilter::Parameters<float>::Type::highPass;
+	}
+	else if (selectFilter == 2)
+	{
+		mStateVariableFilter.state->type = dsp::StateVariableFilter::Parameters<float>::Type::bandPass;
+	}
 }
 
 //==============================================================================

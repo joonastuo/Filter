@@ -35,6 +35,7 @@ private:
 	MagView mMagView;
 
 	typedef AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
+	typedef AudioProcessorValueTreeState::ComboBoxAttachment ComboBoxAttachment;
 
 	Label mFcLabel;
 	Label mGainLabel;
@@ -42,8 +43,11 @@ private:
 	Slider mFcSlider;
 	Slider mGainSlider;
 
+	ComboBox mSelectFilter;
+
 	std::unique_ptr<SliderAttachment> mFcAttachment;
 	std::unique_ptr<SliderAttachment> mGainAttachment;
+	std::unique_ptr<ComboBoxAttachment> mSelectAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterAudioProcessorEditor)
 };
