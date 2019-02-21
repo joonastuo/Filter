@@ -23,13 +23,13 @@ FilterAudioProcessor::FilterAudioProcessor()
                      #endif
                        ),
 	mParameters(*this, nullptr),
-	mFilter(mParameters)
+	mMyFilter(mParameters)
 #endif
 {
 	NormalisableRange<float> fcRange(20.f, 20000.f);
-	NormalisableRange<float> gainRange(-40.f, 40.f);
+	NormalisableRange<float> gainRange(1.f, 5.f);
 	mParameters.createAndAddParameter("fc", "fc", String(), fcRange, 1000.f, nullptr, nullptr);
-	mParameters.createAndAddParameter("gain", "Gain", String(), gainRange, 0.f, nullptr, nullptr);
+	mParameters.createAndAddParameter("gain", "Gain", String(), gainRange, 1.f, nullptr, nullptr);
 	mParameters.state = ValueTree("FilterParameters");
 	mParameters.state.setProperty(IDs::fs, 44100.f, nullptr);
 }
@@ -104,6 +104,12 @@ void FilterAudioProcessor::changeProgramName (int index, const String& newName)
 void FilterAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
 	mParameters.state.setProperty(IDs::fs, sampleRate, nullptr);
+	dsp::ProcessSpec spec;
+	spec.sampleRate = sampleRate;
+	spec.maximumBlockSize = samplesPerBlock;
+	spec.numChannels = getTotalNumOutputChannels();
+	mStateVariableFilter.prepare(spec);
+	mStateVariableFilter.reset();
 }
 
 void FilterAudioProcessor::releaseResources()
@@ -142,17 +148,20 @@ void FilterAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
+	// Use JUCE filter
+	dsp::AudioBlock<float> block(buffer);
+	updateFilter();
+	mStateVariableFilter.process(dsp::ProcessContextReplacing <float>(block));
+}
 
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
-    {
-        auto* channelData = buffer.getWritePointer (channel);
-		for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-		{
-			channelData[sample] = mFilter.applyFilter(buffer.getSample(channel, sample));
-		}
-    }
+void FilterAudioProcessor::updateFilter()
+{
+	float fc = *mParameters.getRawParameterValue("fc");
+	float gain = *mParameters.getRawParameterValue("gain");
+	float fs = mParameters.state[IDs::fs];
+
+	mStateVariableFilter.state->type = dsp::StateVariableFilter::Parameters<float>::Type::lowPass;
+	mStateVariableFilter.state->setCutOffFrequency(fs, fc, gain);
 }
 
 //==============================================================================
@@ -187,6 +196,7 @@ AudioProcessorValueTreeState & FilterAudioProcessor::getState()
 {
 	return mParameters;
 }
+
 
 //==============================================================================
 // This creates new instances of the plugin..

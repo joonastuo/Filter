@@ -57,12 +57,14 @@ public:
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 	AudioProcessorValueTreeState& getState();
+	void updateFilter();
 
 private:
 	AudioProcessorValueTreeState mParameters;
-	Filter mFilter;
+	MyFilter mMyFilter;
 	float mSliderWidth = 50;
 	float mSliderHeight = 100;
+	dsp::ProcessorDuplicator<dsp::StateVariableFilter::Filter<float>, dsp::StateVariableFilter::Parameters <float>> mStateVariableFilter;
 
 
     //==============================================================================

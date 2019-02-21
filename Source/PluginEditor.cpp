@@ -25,6 +25,7 @@ FilterAudioProcessorEditor::FilterAudioProcessorEditor (FilterAudioProcessor& p)
 	mFcAttachment.reset(new SliderAttachment(mParameters, "fc", mFcSlider));
 	mGainAttachment.reset(new SliderAttachment(mParameters, "gain", mGainSlider));
 
+	mFcSlider.setSkewFactorFromMidPoint(1000.0);
 	addAndMakeVisible(mFcSlider);
 	addAndMakeVisible(mGainSlider);
 	addAndMakeVisible(mMagView);

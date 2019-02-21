@@ -14,23 +14,23 @@
 #include <math.h>
 
 //==============================================================================
-Filter::Filter(AudioProcessorValueTreeState& vt) : mParameters(vt)
+MyFilter::MyFilter(AudioProcessorValueTreeState& vt) : mParameters(vt)
 {
 	//mFs.referTo(mParameters.state, IDs::fs, nullptr);
 	//mFc.referTo(mParameters.state, IDs::fc, nullptr);
 	//mGain.referTo(mParameters.state, IDs::gain, nullptr);
 }
 
-Filter::~Filter()
+MyFilter::~MyFilter()
 {
 }
 
-float Filter::applyFilter(float sample)
+float MyFilter::applyFilter(float sample)
 {
 	return firstOrderLowPass(sample);
 }
 
-float Filter::firstOrderLowPass(float sample)
+float MyFilter::firstOrderLowPass(float sample)
 {
 	float* fcPointer = mParameters.getRawParameterValue("fc");
 	float* gainPointer = mParameters.getRawParameterValue("gain");

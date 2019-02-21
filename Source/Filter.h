@@ -16,11 +16,11 @@
 //==============================================================================
 /*
 */
-class Filter
+class MyFilter
 {
 public:
-    Filter(AudioProcessorValueTreeState&);
-    ~Filter();
+    MyFilter(AudioProcessorValueTreeState&);
+    ~MyFilter();
 	float applyFilter(float sample);
 	float firstOrderLowPass(float sample);
 
@@ -33,5 +33,5 @@ private:
 
 	float mPrevXh = 0;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Filter)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MyFilter)
 };
