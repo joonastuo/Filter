@@ -37,6 +37,8 @@ FilterAudioProcessorEditor::~FilterAudioProcessorEditor()
 //==============================================================================
 void FilterAudioProcessorEditor::paint (Graphics& g) 
 {
+	g.fillAll(getLookAndFeel().findColour(ResizableWindow::backgroundColourId));
+	g.setColour(Colours::white);
 }
 
 void FilterAudioProcessorEditor::resized()

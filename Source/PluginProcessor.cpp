@@ -28,11 +28,10 @@ FilterAudioProcessor::FilterAudioProcessor()
 {
 	NormalisableRange<float> fcRange(20.f, 20000.f);
 	NormalisableRange<float> gainRange(-40.f, 40.f);
-	NormalisableRange<float> fsRange(22500.f, 48000.f);
 	mParameters.createAndAddParameter("fc", "fc", String(), fcRange, 1000.f, nullptr, nullptr);
 	mParameters.createAndAddParameter("gain", "Gain", String(), gainRange, 0.f, nullptr, nullptr);
-	mParameters.createAndAddParameter("fs", "fs", String(), fsRange, 44100.f, nullptr, nullptr);
 	mParameters.state = ValueTree("FilterParameters");
+	mParameters.state.setProperty(IDs::fs, 44100.f, nullptr);
 }
 
 FilterAudioProcessor::~FilterAudioProcessor()
@@ -151,7 +150,7 @@ void FilterAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
         auto* channelData = buffer.getWritePointer (channel);
 		for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
 		{
-			//channelData[sample] = mFilter.applyFilter(buffer.getSample(channel, sample));
+			channelData[sample] = mFilter.applyFilter(buffer.getSample(channel, sample));
 		}
     }
 }

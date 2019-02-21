@@ -27,9 +27,9 @@ public:
 private:
 	AudioProcessorValueTreeState& mParameters;
 
-	CachedValue<float> mFc;
-	CachedValue<float> mGain;
-	CachedValue<float> mFs;
+	//CachedValue<float> mFc;
+	//CachedValue<float> mGain;
+	//CachedValue<float> mFs;
 
 	float mPrevXh = 0;
 
