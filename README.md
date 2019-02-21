@@ -1,7 +1,7 @@
 Filter
 ======
 
-A simple LP, HP and BP filter using JUCE StateVariableFilter.
+Filter plugin made with JUCE.
 
 ## Current features
 - Filter type: LP, HP, BP
