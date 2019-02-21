@@ -56,13 +56,15 @@ public:
     //==============================================================================
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+	AudioProcessorValueTreeState& getState();
 
 private:
 	AudioProcessorValueTreeState mParameters;
 	Filter mFilter;
+	float mSliderWidth = 50;
+	float mSliderHeight = 100;
 
-	float* mFcParameter;
-	float* mQParameter;
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterAudioProcessor)
 };

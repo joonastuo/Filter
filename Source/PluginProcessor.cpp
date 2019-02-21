@@ -26,6 +26,13 @@ FilterAudioProcessor::FilterAudioProcessor()
 	mFilter(mParameters)
 #endif
 {
+	NormalisableRange<float> fcRange(20.f, 20000.f);
+	NormalisableRange<float> gainRange(-40.f, 40.f);
+	NormalisableRange<float> fsRange(22500.f, 48000.f);
+	mParameters.createAndAddParameter("fc", "fc", String(), fcRange, 1000.f, nullptr, nullptr);
+	mParameters.createAndAddParameter("gain", "Gain", String(), gainRange, 0.f, nullptr, nullptr);
+	mParameters.createAndAddParameter("fs", "fs", String(), fsRange, 44100.f, nullptr, nullptr);
+	mParameters.state = ValueTree("FilterParameters");
 }
 
 FilterAudioProcessor::~FilterAudioProcessor()
@@ -97,8 +104,7 @@ void FilterAudioProcessor::changeProgramName (int index, const String& newName)
 //==============================================================================
 void FilterAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+	mParameters.state.setProperty(IDs::fs, sampleRate, nullptr);
 }
 
 void FilterAudioProcessor::releaseResources()
@@ -145,7 +151,7 @@ void FilterAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
         auto* channelData = buffer.getWritePointer (channel);
 		for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
 		{
-			channelData[sample] = mFilter.applyFilter(buffer.getSample(channel, sample));
+			//channelData[sample] = mFilter.applyFilter(buffer.getSample(channel, sample));
 		}
     }
 }
@@ -158,21 +164,29 @@ bool FilterAudioProcessor::hasEditor() const
 
 AudioProcessorEditor* FilterAudioProcessor::createEditor()
 {
-    return new FilterAudioProcessorEditor (*this, mParameters);
+    return new FilterAudioProcessorEditor (*this);
 }
 
 //==============================================================================
 void FilterAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+	auto state = mParameters.copyState();
+	std::unique_ptr<XmlElement> xml(state.createXml());
+	copyXmlToBinary(*xml, destData);
 }
 
 void FilterAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+	std::unique_ptr<XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+
+	if (xmlState.get() != nullptr)
+		if (xmlState->hasTagName(mParameters.state.getType()))
+			mParameters.replaceState(ValueTree::fromXml(*xmlState));
+}
+
+AudioProcessorValueTreeState & FilterAudioProcessor::getState()
+{
+	return mParameters;
 }
 
 //==============================================================================

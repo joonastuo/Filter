@@ -21,23 +21,29 @@
 class FilterAudioProcessorEditor  : public AudioProcessorEditor
 {
 public:
-    FilterAudioProcessorEditor (FilterAudioProcessor&, AudioProcessorValueTreeState&);
+    FilterAudioProcessorEditor (FilterAudioProcessor&);
     ~FilterAudioProcessorEditor();
 
     //==============================================================================
     void paint (Graphics&) override;
     void resized() override;
-	FlexItem splitComponent(Component& c, int width, int height);
-	FlexItem splitVertical(Component& c, int height);
-	FlexItem splitHorizontal(Component&, int width);
+	FlexItem splitSliderComponent(Component& c);
 
 private:
     FilterAudioProcessor& processor;
 	AudioProcessorValueTreeState& mParameters;
 	MagView mMagView;
 
+	typedef AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
+
+	Label mFcLabel;
+	Label mGainLabel;
+
 	Slider mFcSlider;
 	Slider mGainSlider;
+
+	std::unique_ptr<SliderAttachment> mFcAttachment;
+	std::unique_ptr<SliderAttachment> mGainAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterAudioProcessorEditor)
 };
