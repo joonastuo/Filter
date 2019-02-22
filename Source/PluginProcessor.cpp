@@ -147,8 +147,8 @@ bool FilterAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) c
 void FilterAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
+    // auto totalNumInputChannels  = getTotalNumInputChannels();
+    // auto totalNumOutputChannels = getTotalNumOutputChannels();
 
 	// Use JUCE filter
 	dsp::AudioBlock<float> block(buffer);
