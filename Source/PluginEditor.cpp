@@ -28,11 +28,11 @@ void FilterAudioProcessorEditor::paint (Graphics& g)
 {
 	g.fillAll(getLookAndFeel().findColour(ResizableWindow::backgroundColourId));
 	g.setColour(Colours::white);
-	float xCenter = 110;
-	float yCenter = 155;
+	float xCenter = (getWidth() / 4.f) + 10.f;
+	float yCenter = getHeight() - (getHeight() - 60.f) / 2.f;
 	float r = 52;
 	paintMarkers(g, xCenter, yCenter, r);
-	xCenter = 290;
+	xCenter = getWidth() - xCenter;
 	paintMarkers(g, xCenter, yCenter, r);
 }
 
