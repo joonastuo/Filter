@@ -13,7 +13,6 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
 #include "Identifiers.h"
-#include "MagView.h"
 
 //==============================================================================
 /**
@@ -26,27 +25,28 @@ public:
 
     //==============================================================================
     void paint (Graphics&) override;
+	void paintMarkers(Graphics&, float xCenter, float yCenter, float r);
     void resized() override;
-	FlexItem splitSliderComponent(Component& c);
-
+	void initialiseGUI();
 private:
     FilterAudioProcessor& processor;
 	AudioProcessorValueTreeState& mParameters;
-	MagView mMagView;
 
-	typedef AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
-	typedef AudioProcessorValueTreeState::ComboBoxAttachment ComboBoxAttachment;
-
+	// GUI elements
 	Label mFcLabel;
-	Label mGainLabel;
+	Label mResLabel;
+	Label mSelectLabel;
 
 	Slider mFcSlider;
-	Slider mGainSlider;
+	Slider mResSlider;
 
 	ComboBox mSelectFilter;
-
+	// Attachments
+	typedef AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
+	typedef AudioProcessorValueTreeState::ComboBoxAttachment ComboBoxAttachment;
+	
 	std::unique_ptr<SliderAttachment> mFcAttachment;
-	std::unique_ptr<SliderAttachment> mGainAttachment;
+	std::unique_ptr<SliderAttachment> mResAttachment;
 	std::unique_ptr<ComboBoxAttachment> mSelectAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterAudioProcessorEditor)

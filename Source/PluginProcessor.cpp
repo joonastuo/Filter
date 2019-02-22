@@ -22,15 +22,14 @@ FilterAudioProcessor::FilterAudioProcessor()
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
                      #endif
                        ),
-	mParameters(*this, nullptr),
-	mMyFilter(mParameters)
+	mParameters(*this, nullptr)
 #endif
 {
 	NormalisableRange<float> fcRange(20.f, 20000.f);
 	NormalisableRange<float> gainRange(1.f, 5.f);
 	NormalisableRange<float> selectRange(0, 2);
 	mParameters.createAndAddParameter("fc", "fc", String(), fcRange, 1000.f, nullptr, nullptr);
-	mParameters.createAndAddParameter("gain", "Gain", String(), gainRange, 1.f, nullptr, nullptr);
+	mParameters.createAndAddParameter("res", "Res", String(), gainRange, 1.f, nullptr, nullptr);
 	mParameters.createAndAddParameter("selectFilter", "SelectFilter" , String(), selectRange, 0, nullptr, nullptr);
 	mParameters.state = ValueTree("FilterParameters");
 	mParameters.state.setProperty(IDs::fs, 44100.f, nullptr);
@@ -147,8 +146,6 @@ bool FilterAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) c
 void FilterAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     ScopedNoDenormals noDenormals;
-    // auto totalNumInputChannels  = getTotalNumInputChannels();
-    // auto totalNumOutputChannels = getTotalNumOutputChannels();
 
 	// Use JUCE filter
 	dsp::AudioBlock<float> block(buffer);
@@ -159,7 +156,7 @@ void FilterAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
 void FilterAudioProcessor::updateFilter()
 {
 	float fc = *mParameters.getRawParameterValue("fc");
-	float gain = *mParameters.getRawParameterValue("gain");
+	float gain = *mParameters.getRawParameterValue("res");
 	float fs = mParameters.state[IDs::fs];
 	float selectFilter = *mParameters.getRawParameterValue("selectFilter");
 

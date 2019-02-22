@@ -12,7 +12,6 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Identifiers.h"
-#include "Filter.h"
 
 //==============================================================================
 /**
@@ -61,11 +60,10 @@ public:
 
 private:
 	AudioProcessorValueTreeState mParameters;
-	MyFilter mMyFilter;
 	float mSliderWidth = 50;
 	float mSliderHeight = 100;
-	dsp::ProcessorDuplicator<dsp::StateVariableFilter::Filter<float>, dsp::StateVariableFilter::Parameters <float>> mStateVariableFilter;
-
+	dsp::ProcessorDuplicator<dsp::StateVariableFilter::Filter<float>, 
+							 dsp::StateVariableFilter::Parameters <float>> mStateVariableFilter;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterAudioProcessor)
