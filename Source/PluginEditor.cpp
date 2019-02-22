@@ -36,21 +36,23 @@ void FilterAudioProcessorEditor::paint (Graphics& g)
 	paintMarkers(g, xCenter, yCenter, r);
 }
 
-void FilterAudioProcessorEditor::paintMarkers(Graphics & g, float xCenter, float yCenter, float r)
+void FilterAudioProcessorEditor::paintMarkers(Graphics & g, float xOrig, float yOrig, float r)
 {
 	g.setColour(Colours::white);
-
-	for (auto i = 120; i <= 420; ++i)
+	// Tick division in degrees;
+	int largeTick = 36;
+	int smallTickPos = round(largeTick / 2.f);
+	for (auto i = -60; i <= 240; ++i)
 	{
 		float rad = i * (M_PI / 180.f);
-		float x = xCenter + r * cos(rad);
-		float y = yCenter + r * sin(rad);
+		float x = xOrig + r * cos(rad);
+		float y = yOrig + r * -sin(rad);
 
 		// Big circles
-		if (i % 18 == 0)
+		if (i % largeTick == 0)
 			g.fillEllipse(x - 2, y - 2, 4, 4);
 		// Small circles
-		if (i % 18 == 9)
+		if (abs(i) % largeTick == smallTickPos)
 			g.fillEllipse(x - 1, y - 1, 2, 2);
 	}
 }
