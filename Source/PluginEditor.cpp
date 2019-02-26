@@ -31,9 +31,9 @@ void FilterAudioProcessorEditor::paint (Graphics& g)
 	float xCenter = (getWidth() / 4.f) + 10.f;
 	float yCenter = getHeight() - (getHeight() - 60.f) / 2.f;
 	float r = 52;
-	paintMarkers(g, xCenter, yCenter, r);
+	// paintMarkers(g, xCenter, yCenter, r);
 	xCenter = getWidth() - xCenter;
-	paintMarkers(g, xCenter, yCenter, r);
+	// paintMarkers(g, xCenter, yCenter, r);
 }
 
 void FilterAudioProcessorEditor::paintMarkers(Graphics & g, float xOrig, float yOrig, float r)
@@ -85,6 +85,8 @@ void FilterAudioProcessorEditor::initialiseGUI()
 	mResSlider.setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxBelow, true, 100, 20);
 	addAndMakeVisible(mFcSlider);
 	addAndMakeVisible(mResSlider);
+	mFcSlider.setLookAndFeel(&knobLookAndFeel);
+	mResSlider.setLookAndFeel(&knobLookAndFeel);
 	// Slider attachments
 	mFcAttachment.reset(new SliderAttachment(mParameters, "fc", mFcSlider));
 	mResAttachment.reset(new SliderAttachment(mParameters, "res", mResSlider));

@@ -13,6 +13,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
 #include "Identifiers.h"
+#include "MyKnobs.h"
 
 //==============================================================================
 /**
@@ -31,6 +32,7 @@ public:
 private:
     FilterAudioProcessor& processor;
 	AudioProcessorValueTreeState& mParameters;
+	KnobLookAndFeel knobLookAndFeel;
 
 	// GUI elements
 	Label mFcLabel;

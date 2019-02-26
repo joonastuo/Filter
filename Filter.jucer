@@ -15,6 +15,7 @@
       <FILE id="AYECgh" name="MagView.cpp" compile="1" resource="0" file="Source/MagView.cpp"/>
       <FILE id="dTN4pK" name="MagView.h" compile="0" resource="0" file="Source/MagView.h"/>
       <FILE id="yUxjyd" name="Identifiers.h" compile="0" resource="0" file="Source/Identifiers.h"/>
+      <FILE id="PDgCtd" name="MyKnobs.h" compile="0" resource="0" file="Source/MyKnobs.h"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
