@@ -14,6 +14,7 @@
 #include "PluginProcessor.h"
 #include "Identifiers.h"
 #include "MyKnobs.h"
+#include "MagView.h"
 
 //==============================================================================
 /**
@@ -31,6 +32,7 @@ public:
 private:
     FilterAudioProcessor& processor;
 	AudioProcessorValueTreeState& mParameters;
+	MagView mMagView;
 	KnobLookAndFeel knobLookAndFeel;
 
 	// GUI elements
