@@ -13,6 +13,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
 #include "Identifiers.h"
+#include "MyKnobs.h"
 
 //==============================================================================
 /**
@@ -25,12 +26,12 @@ public:
 
     //==============================================================================
     void paint (Graphics&) override;
-	void paintMarkers(Graphics&, float xCenter, float yCenter, float r);
     void resized() override;
 	void initialiseGUI();
 private:
     FilterAudioProcessor& processor;
 	AudioProcessorValueTreeState& mParameters;
+	KnobLookAndFeel knobLookAndFeel;
 
 	// GUI elements
 	Label mFcLabel;

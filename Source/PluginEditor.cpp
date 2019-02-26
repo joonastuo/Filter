@@ -26,35 +26,12 @@ FilterAudioProcessorEditor::~FilterAudioProcessorEditor() {}
 //==============================================================================
 void FilterAudioProcessorEditor::paint (Graphics& g) 
 {
-	g.fillAll(getLookAndFeel().findColour(ResizableWindow::backgroundColourId));
+	g.fillAll(Colour(40, 190, 127).darker(.4));
 	g.setColour(Colours::white);
 	float xCenter = (getWidth() / 4.f) + 10.f;
 	float yCenter = getHeight() - (getHeight() - 60.f) / 2.f;
 	float r = 52;
-	paintMarkers(g, xCenter, yCenter, r);
 	xCenter = getWidth() - xCenter;
-	paintMarkers(g, xCenter, yCenter, r);
-}
-
-void FilterAudioProcessorEditor::paintMarkers(Graphics & g, float xOrig, float yOrig, float r)
-{
-	g.setColour(Colours::white);
-	// Tick division in degrees;
-	int largeTick = 36;
-	int smallTickPos = round(largeTick / 2.f);
-	for (auto i = -60; i <= 240; ++i)
-	{
-		float rad = i * (M_PI / 180.f);
-		float x = xOrig + r * cos(rad);
-		float y = yOrig + r * -sin(rad);
-
-		// Big circles
-		if (i % largeTick == 0)
-			g.fillEllipse(x - 2, y - 2, 4, 4);
-		// Small circles
-		if (abs(i) % largeTick == smallTickPos)
-			g.fillEllipse(x - 1, y - 1, 2, 2);
-	}
 }
 
 void FilterAudioProcessorEditor::resized()
@@ -85,6 +62,8 @@ void FilterAudioProcessorEditor::initialiseGUI()
 	mResSlider.setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxBelow, true, 100, 20);
 	addAndMakeVisible(mFcSlider);
 	addAndMakeVisible(mResSlider);
+	mFcSlider.setLookAndFeel(&knobLookAndFeel);
+	mResSlider.setLookAndFeel(&knobLookAndFeel);
 	// Slider attachments
 	mFcAttachment.reset(new SliderAttachment(mParameters, "fc", mFcSlider));
 	mResAttachment.reset(new SliderAttachment(mParameters, "res", mResSlider));
