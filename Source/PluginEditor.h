@@ -26,7 +26,6 @@ public:
 
     //==============================================================================
     void paint (Graphics&) override;
-	void paintMarkers(Graphics&, float xCenter, float yCenter, float r);
     void resized() override;
 	void initialiseGUI();
 private:
