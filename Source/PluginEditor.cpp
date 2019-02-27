@@ -73,7 +73,8 @@ void FilterAudioProcessorEditor::initialiseGUI()
 	mFcSlider.setSkewFactorFromMidPoint(1000.0);
 	// Set up combo box	
 	mSelectFilter.addItemList({ "Low Pass", "High Pass", "Band Pass" }, 1);
-	mSelectFilter.setSelectedItemIndex(0, true);
+	float selectFilter = *mParameters.getRawParameterValue("selectFilter");
+	mSelectFilter.setSelectedItemIndex(selectFilter, true);
 	mSelectFilter.setJustificationType(Justification::centred);
 	addAndMakeVisible(mSelectFilter);
 	// Set up Labels

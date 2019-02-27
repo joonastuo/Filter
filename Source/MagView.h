@@ -41,7 +41,7 @@ private:
 	float mFilteredImpulse[fftSize * 2] = { 0.0f };
 	float mOldFc = 0;
 	float mOldRes = 0;
-	float mOldSelect = 0;
+	float mOldSelect = -1;
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MagView)
