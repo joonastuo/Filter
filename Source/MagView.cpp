@@ -12,10 +12,10 @@
 #include "MagView.h"
 
 //==============================================================================
-MagView::MagView(AudioProcessorValueTreeState& vt) : mParameters(vt), mFFT(10)
+MagView::MagView(AudioProcessorValueTreeState& vt) : mParameters(vt), mFFT(fftOrder)
 {
-	setSize(200, 100);
-	startTimer(20.f);
+	setSize(200, 80);
+	startTimer(100.f);
 }
 
 MagView::~MagView()
@@ -24,19 +24,22 @@ MagView::~MagView()
 
 void MagView::paint (Graphics& g)
 {
-    g.setColour (Colour(40, 190, 127).darker(1.f));
-    g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 10.f);   // draw an outline around the component
+    g.setColour (Colours::black);
+    g.fillRect (0, 0, getWidth(), getHeight());   // draw an outline around the component
 
-	float startX = 0.f;
-	float startY = 20.f * log10(mFilteredImpulse[0]);
+	g.setColour(Colours::white);
+
+	float scaleX = getWidth() / log10(fftSize / 2.f);
+	float scaleY = (getHeight() / 2.f) / 20.f;
+	float startX = 0.f * scaleX;
+	float startY = (getHeight()/2.f - 20.f * log10(mFilteredImpulse[0])*scaleY) ;
 	float endX = 0.f;
 	float endY = 0.f;
-	float scale = getWidth() / (fftSize / 2.f);
 	for (auto i = 1; i < fftSize / 2.f; ++i)
 	{
-		float endX = i*scale;
-		float endY = 20.f * log10(abs(mFilteredImpulse[i]));
-		if (endY > 0 && startY > 0 && endY < 100 && startY < 100)
+		float endX = log10(i) * scaleX;
+		float endY = (getHeight()/2.f - 20.f * log10(mFilteredImpulse[i])*scaleY) ;
+		if (endY > -20.f && startY > -20.f && endY < 200 && startY < 200)
 			g.drawLine(startX, startY, endX, endY, 2.f);
 		startX = endX;
 		startY = endY;
@@ -75,7 +78,9 @@ void MagView::timerCallback()
 {
 	float fc = *mParameters.getRawParameterValue("fc");
 	float res = *mParameters.getRawParameterValue("res");
-	if (fc != mOldFc || res != mOldRes)
+	float selectFilter = *mParameters.getRawParameterValue("selectFilter");
+	
+	if (fc != mOldFc || res != mOldRes || selectFilter != mOldSelect)
 	{
 		updateFilter();
 		calcMagResponse();
@@ -83,6 +88,7 @@ void MagView::timerCallback()
 	}
 	mOldFc = fc;
 	mOldRes = res;
+	mOldSelect = selectFilter;
 }
 
 void MagView::calcMagResponse()

@@ -29,7 +29,7 @@ public:
 	void calcMagResponse();
 	enum
 	{
-		fftOrder = 10,
+		fftOrder = 12,
 		fftSize = 1 << fftOrder
 	};
 
@@ -41,6 +41,7 @@ private:
 	float mFilteredImpulse[fftSize * 2] = { 0.0f };
 	float mOldFc = 0;
 	float mOldRes = 0;
+	float mOldSelect = 0;
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MagView)

@@ -28,7 +28,7 @@ FilterAudioProcessorEditor::~FilterAudioProcessorEditor() {}
 //==============================================================================
 void FilterAudioProcessorEditor::paint (Graphics& g) 
 {
-	g.fillAll(Colour(40, 190, 127).darker(.4));
+	g.fillAll(getLookAndFeel().findColour(ResizableWindow::backgroundColourId)); 
 	g.setColour(Colours::white);
 	float xCenter = (getWidth() / 4.f) + 10.f;
 	float yCenter = getHeight() - (getHeight() - 60.f) / 2.f;
@@ -38,8 +38,11 @@ void FilterAudioProcessorEditor::paint (Graphics& g)
 
 void FilterAudioProcessorEditor::resized()
 {
-	auto area = getLocalBounds().reduced(20, 20);
-	mMagView.setBounds(area.removeFromTop(150.f));
+	auto area = getLocalBounds().reduced(40, 20);
+	auto magArea = area.removeFromTop(100.f);
+	magArea.removeFromLeft(20.f);
+	magArea.removeFromRight(20.f);
+	mMagView.setBounds(magArea);
 	area.removeFromTop(10.f);
 	auto mFreqArea = area.removeFromLeft(.25*getWidth());
 	auto mResArea = area.removeFromLeft(.25*getWidth());
@@ -70,6 +73,7 @@ void FilterAudioProcessorEditor::initialiseGUI()
 	mFcSlider.setSkewFactorFromMidPoint(1000.0);
 	// Set up combo box	
 	mSelectFilter.addItemList({ "Low Pass", "High Pass", "Band Pass" }, 1);
+	mSelectFilter.setSelectedItemIndex(0, true);
 	mSelectFilter.setJustificationType(Justification::centred);
 	addAndMakeVisible(mSelectFilter);
 	// Set up Labels
