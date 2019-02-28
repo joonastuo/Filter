@@ -24,37 +24,57 @@ MagView::~MagView()
 
 void MagView::paint (Graphics& g)
 {
+	// Rounded rectangle around the graph
     g.setColour (getLookAndFeel().findColour(ResizableWindow::backgroundColourId).darker(.8));
     g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 10.f);   // draw an outline around the component
 
+
+	g.setColour(Colours::white.darker(.8f));
+	float myDash[2] = { 4.f, 4.f };
+	g.drawDashedLine(Line<float>(0.f, getHeight() / 2.f, getWidth(), getHeight() / 2.f), myDash, 2, 1.f);
+	// Graph frequency response
 	g.setColour(Colours::white);
-
-	Path myPath;
-	float scaleX = getWidth() / log10(fftSize / 2.f);
+	// Needed variables
+	float fftLen = fftSize / 2.f;
+	float scaleX = getWidth() / log10(fftLen);
 	float scaleY = (getHeight() / 2.f) / 20.f;
-
 	float endX = 0.f;
 	float endY = 0.f;
 	bool startFound = false;
 
-	for (auto i = 0; i < fftSize / 2.f; ++i)
+	// Path of the frequency response
+	Path myPath;
+
+	for (auto i = 0; i < fftLen; ++i)
 	{
+		// x and y in the log10 scale
 		endX = i == 0 ? 0.f : log10(i) * scaleX;
 		endY = (getHeight()/2.f - 20.f * log10(mFilteredImpulse[i])*scaleY) ;
+		
+		if (i == round(pow(2.f, 3.5f)) || i == round(pow(2.f, 7.f)) || i == round(pow(2.f, 10.5f)))
+		{
+			g.setColour(Colours::white.darker(.8f));
+			float myDash[2] = { 4.f, 4.f };
+			g.drawDashedLine(Line<float>(endX, 0.f, endX, getHeight()), myDash, 2, 1.f);
+			g.setColour(Colours::white);
+		}
 
-		if (startFound == false && (endY > 0.f && endY < getHeight()))
+		// Start of the path
+		if (startFound == false && (endY > 0.f && endY < getHeight() + 20.f))
 		{
 			myPath.startNewSubPath(endX, endY);
 			startFound = true;
 		}
 		else
 		{
+		// Rest of the path that is inside the figure area
 		if (endY > 0 && endY < getHeight() && startFound == true)
 			myPath.lineTo(endX, endY);
 		}
 	}
+	// Draw path with curves
 	Path roundedPath = myPath.createPathWithRoundedCorners(5.0f);
-	g.strokePath(roundedPath, PathStrokeType(1.f));
+	g.strokePath(roundedPath, PathStrokeType(2.f));
 }
 
 void MagView::resized()

@@ -19,7 +19,7 @@ FilterAudioProcessorEditor::FilterAudioProcessorEditor (FilterAudioProcessor& p)
 	  mParameters(p.getState()),
 	  mMagView(p.getState())
 {
-    setSize (350, 250);
+    setSize (350, 240);
 	initialiseGUI();
 }
 
@@ -50,8 +50,8 @@ void FilterAudioProcessorEditor::resized()
 	mFcSlider.setBounds(mFreqArea);
 	mResLabel.setBounds(mResArea.removeFromBottom(20.f));
 	mResSlider.setBounds(mResArea);
-	mSelectLabel.setBounds(area.removeFromBottom(20.f));
-	area.removeFromTop(25.f);
+	area.removeFromTop(10.f);
+	mSelectLabel.setBounds(area.removeFromTop(25.f));
 	mSelectFilter.setBounds(area.removeFromTop(30.f));
 }
 
@@ -78,9 +78,9 @@ void FilterAudioProcessorEditor::initialiseGUI()
 	mSelectFilter.setJustificationType(Justification::centred);
 	addAndMakeVisible(mSelectFilter);
 	// Set up Labels
-	mFcLabel.setText("Frequency", dontSendNotification);
-	mResLabel.setText("Resonance", dontSendNotification);
-	mSelectLabel.setText("Filter Type",dontSendNotification);
+	mFcLabel.setText("FREQ", dontSendNotification);
+	mResLabel.setText("RES", dontSendNotification);
+	mSelectLabel.setText("TYPE",dontSendNotification);
 	mFcLabel.setJustificationType(Justification::centred);
 	mResLabel.setJustificationType(Justification::centred);
 	mSelectLabel.setJustificationType(Justification::centred);
