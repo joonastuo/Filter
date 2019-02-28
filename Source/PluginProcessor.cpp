@@ -25,7 +25,7 @@ FilterAudioProcessor::FilterAudioProcessor()
 	mParameters(*this, nullptr)
 #endif
 {
-	NormalisableRange<float> fcRange(20.f, 20000.f);
+	NormalisableRange<float> fcRange(26.f, 15000.f);
 	NormalisableRange<float> gainRange(1.f, 5.f);
 	NormalisableRange<float> selectRange(0, 2);
 	mParameters.createAndAddParameter("fc", "fc", String(), fcRange, 1000.f, nullptr, nullptr);

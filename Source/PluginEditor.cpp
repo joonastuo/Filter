@@ -15,9 +15,11 @@
 
 //==============================================================================
 FilterAudioProcessorEditor::FilterAudioProcessorEditor (FilterAudioProcessor& p)
-    : AudioProcessorEditor (&p), processor (p), mParameters(p.getState())
+    : AudioProcessorEditor (&p), processor (p),
+	  mParameters(p.getState()),
+	  mMagView(p.getState())
 {
-    setSize (400, 250);
+    setSize (350, 250);
 	initialiseGUI();
 }
 
@@ -26,7 +28,7 @@ FilterAudioProcessorEditor::~FilterAudioProcessorEditor() {}
 //==============================================================================
 void FilterAudioProcessorEditor::paint (Graphics& g) 
 {
-	g.fillAll(Colour(40, 190, 127).darker(.4));
+	g.fillAll(getLookAndFeel().findColour(ResizableWindow::backgroundColourId)); 
 	g.setColour(Colours::white);
 	float xCenter = (getWidth() / 4.f) + 10.f;
 	float yCenter = getHeight() - (getHeight() - 60.f) / 2.f;
@@ -36,21 +38,21 @@ void FilterAudioProcessorEditor::paint (Graphics& g)
 
 void FilterAudioProcessorEditor::resized()
 {
-	auto area = getLocalBounds().reduced(20, 20);
-	mSelectLabel.setBounds(area.removeFromTop(20.f));
-	area.removeFromTop(5.f);
-	auto selectArea = area.removeFromTop(20);
-	selectArea.removeFromLeft(40.f);
-	selectArea.removeFromRight(40.f);
-	mSelectFilter.setBounds(selectArea);
+	auto area = getLocalBounds().reduced(40, 20);
+	auto magArea = area.removeFromTop(100.f);
+	magArea.removeFromLeft(10.f);
+	magArea.removeFromRight(10.f);
+	mMagView.setBounds(magArea);
 	area.removeFromTop(10.f);
-	auto labelArea = area.removeFromTop(20.f);
-	mFcLabel.setBounds(labelArea.removeFromLeft(area.getWidth() * .5f));
-	mResLabel.setBounds(labelArea);
-	area.removeFromTop(5.f);
-	auto bottomLeft = area.removeFromLeft(area.getWidth() * .5f);
-	mFcSlider.setBounds(bottomLeft);
-	mResSlider.setBounds(area);
+	auto mFreqArea = area.removeFromLeft(.25*getWidth());
+	auto mResArea = area.removeFromLeft(.25*getWidth());
+	mFcLabel.setBounds(mFreqArea.removeFromBottom(20.f));
+	mFcSlider.setBounds(mFreqArea);
+	mResLabel.setBounds(mResArea.removeFromBottom(20.f));
+	mResSlider.setBounds(mResArea);
+	mSelectLabel.setBounds(area.removeFromBottom(20.f));
+	area.removeFromTop(25.f);
+	mSelectFilter.setBounds(area.removeFromTop(30.f));
 }
 
 void FilterAudioProcessorEditor::initialiseGUI()
@@ -58,8 +60,8 @@ void FilterAudioProcessorEditor::initialiseGUI()
 	// Set up sliders
 	mFcSlider.setSliderStyle(Slider::SliderStyle::Rotary);
 	mResSlider.setSliderStyle(Slider::SliderStyle::Rotary);
-	mFcSlider.setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxBelow,true, 100, 20);
-	mResSlider.setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxBelow, true, 100, 20);
+	mFcSlider.setTextBoxStyle(Slider::TextEntryBoxPosition::NoTextBox, true, 1.f, 1.f);
+	mResSlider.setTextBoxStyle(Slider::TextEntryBoxPosition::NoTextBox, true, 1.f, 1.f);
 	addAndMakeVisible(mFcSlider);
 	addAndMakeVisible(mResSlider);
 	mFcSlider.setLookAndFeel(&knobLookAndFeel);
@@ -71,11 +73,13 @@ void FilterAudioProcessorEditor::initialiseGUI()
 	mFcSlider.setSkewFactorFromMidPoint(1000.0);
 	// Set up combo box	
 	mSelectFilter.addItemList({ "Low Pass", "High Pass", "Band Pass" }, 1);
+	float selectFilter = *mParameters.getRawParameterValue("selectFilter");
+	mSelectFilter.setSelectedItemIndex(selectFilter, true);
 	mSelectFilter.setJustificationType(Justification::centred);
 	addAndMakeVisible(mSelectFilter);
 	// Set up Labels
-	mFcLabel.setText("Freq", dontSendNotification);
-	mResLabel.setText("Res", dontSendNotification);
+	mFcLabel.setText("Frequency", dontSendNotification);
+	mResLabel.setText("Resonance", dontSendNotification);
 	mSelectLabel.setText("Filter Type",dontSendNotification);
 	mFcLabel.setJustificationType(Justification::centred);
 	mResLabel.setJustificationType(Justification::centred);
@@ -86,4 +90,5 @@ void FilterAudioProcessorEditor::initialiseGUI()
 	addAndMakeVisible(mResLabel);
 	addAndMakeVisible(mFcLabel);
 	addAndMakeVisible(mSelectLabel);
+	addAndMakeVisible(mMagView);
 }
