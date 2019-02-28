@@ -29,7 +29,7 @@ public:
 	void calcMagResponse();
 	enum
 	{
-		fftOrder = 12,
+		fftOrder = 14,
 		fftSize = 1 << fftOrder
 	};
 

@@ -19,7 +19,7 @@ FilterAudioProcessorEditor::FilterAudioProcessorEditor (FilterAudioProcessor& p)
 	  mParameters(p.getState()),
 	  mMagView(p.getState())
 {
-    setSize (400, 300);
+    setSize (300, 300);
 	initialiseGUI();
 }
 

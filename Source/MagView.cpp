@@ -15,7 +15,7 @@
 MagView::MagView(AudioProcessorValueTreeState& vt) : mParameters(vt), mFFT(fftOrder)
 {
 	setSize(200, 80);
-	startTimer(100.f);
+	startTimer(10.f);
 }
 
 MagView::~MagView()
@@ -29,22 +29,32 @@ void MagView::paint (Graphics& g)
 
 	g.setColour(Colours::white);
 
+	Path myPath;
 	float scaleX = getWidth() / log10(fftSize / 2.f);
 	float scaleY = (getHeight() / 2.f) / 20.f;
-	float startX = 0.f * scaleX;
-	float startY = (getHeight()/2.f - 20.f * log10(mFilteredImpulse[0])*scaleY) ;
+
 	float endX = 0.f;
 	float endY = 0.f;
-	for (auto i = 1; i < fftSize / 2.f; ++i)
-	{
-		float endX = log10(i) * scaleX;
-		float endY = (getHeight()/2.f - 20.f * log10(mFilteredImpulse[i])*scaleY) ;
-		if (endY > -20.f && startY > -20.f && endY < 200 && startY < 200)
-			g.drawLine(startX, startY, endX, endY, 2.f);
-		startX = endX;
-		startY = endY;
-	}
+	bool startFound = false;
 
+	for (auto i = 0; i < fftSize / 2.f; ++i)
+	{
+		endX = i == 0 ? 0.f : log10(i) * scaleX;
+		endY = (getHeight()/2.f - 20.f * log10(mFilteredImpulse[i])*scaleY) ;
+
+		if (startFound == false && (endY > 0.f && endY < getHeight()))
+		{
+			myPath.startNewSubPath(endX, endY);
+			startFound = true;
+		}
+		else
+		{
+		if (endY > 0 && endY < getHeight() && startFound == true)
+			myPath.lineTo(endX, endY);
+		}
+	}
+	Path roundedPath = myPath.createPathWithRoundedCorners(5.0f);
+	g.strokePath(roundedPath, PathStrokeType(2.f));
 }
 
 void MagView::resized()
