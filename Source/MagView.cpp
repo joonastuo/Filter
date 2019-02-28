@@ -24,8 +24,8 @@ MagView::~MagView()
 
 void MagView::paint (Graphics& g)
 {
-    g.setColour (Colours::black);
-    g.fillRect (0, 0, getWidth(), getHeight());   // draw an outline around the component
+    g.setColour (getLookAndFeel().findColour(ResizableWindow::backgroundColourId).darker(.5));
+    g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 10.f);   // draw an outline around the component
 
 	g.setColour(Colours::white);
 
@@ -54,7 +54,7 @@ void MagView::paint (Graphics& g)
 		}
 	}
 	Path roundedPath = myPath.createPathWithRoundedCorners(5.0f);
-	g.strokePath(roundedPath, PathStrokeType(2.f));
+	g.strokePath(roundedPath, PathStrokeType(1.f));
 }
 
 void MagView::resized()
