@@ -19,7 +19,7 @@ FilterAudioProcessorEditor::FilterAudioProcessorEditor (FilterAudioProcessor& p)
 	  mParameters(p.getState()),
 	  mMagView(p.getState())
 {
-    setSize (350, 300);
+    setSize (350, 250);
 	initialiseGUI();
 }
 
@@ -50,9 +50,9 @@ void FilterAudioProcessorEditor::resized()
 	mFcSlider.setBounds(mFreqArea);
 	mResLabel.setBounds(mResArea.removeFromBottom(20.f));
 	mResSlider.setBounds(mResArea);
-	mSelectLabel.setBounds(area.removeFromBottom(30.f));
-	area.removeFromBottom(40.f);
-	mSelectFilter.setBounds(area.removeFromBottom(25.f));
+	mSelectLabel.setBounds(area.removeFromBottom(20.f));
+	area.removeFromTop(25.f);
+	mSelectFilter.setBounds(area.removeFromTop(30.f));
 }
 
 void FilterAudioProcessorEditor::initialiseGUI()

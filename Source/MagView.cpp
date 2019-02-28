@@ -24,7 +24,7 @@ MagView::~MagView()
 
 void MagView::paint (Graphics& g)
 {
-    g.setColour (getLookAndFeel().findColour(ResizableWindow::backgroundColourId).darker(.5));
+    g.setColour (getLookAndFeel().findColour(ResizableWindow::backgroundColourId).darker(.8));
     g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 10.f);   // draw an outline around the component
 
 	g.setColour(Colours::white);

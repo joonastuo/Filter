@@ -36,7 +36,7 @@ public:
 		paintMarkers(g, centreX, centreY, radius+1.f);
 		// outline
 		Path p;
-		auto pointerLength = radius * 0.2f;
+		auto pointerLength = radius * 0.33f;
 		auto pointerThickness = 2.0f;
 		p.addRectangle(-pointerThickness * 0.5f, -radius, pointerThickness, pointerLength);
 		p.applyTransform(AffineTransform::rotation(angle).translated(centreX, centreY));
