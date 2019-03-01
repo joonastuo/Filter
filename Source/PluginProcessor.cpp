@@ -28,7 +28,7 @@ FilterAudioProcessor::FilterAudioProcessor()
 	NormalisableRange<float> fcRange(20.f, 20000.f);
 	NormalisableRange<float> gainRange(0.5f, 5.f);
 	NormalisableRange<float> selectRange(0, 2);
-	mParameters.createAndAddParameter("fc", "fc", String(), fcRange, 1000.f, nullptr, nullptr);
+	mParameters.createAndAddParameter("fc", "Freq", String(), fcRange, 1000.f, nullptr, nullptr);
 	mParameters.createAndAddParameter("res", "Res", String(), gainRange, 1.f, nullptr, nullptr);
 	mParameters.createAndAddParameter("selectFilter", "SelectFilter" , String(), selectRange, 0, nullptr, nullptr);
 	mParameters.state = ValueTree("FilterParameters");
