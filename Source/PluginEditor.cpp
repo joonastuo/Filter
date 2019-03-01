@@ -29,16 +29,11 @@ FilterAudioProcessorEditor::~FilterAudioProcessorEditor() {}
 void FilterAudioProcessorEditor::paint (Graphics& g) 
 {
 	g.fillAll(getLookAndFeel().findColour(ResizableWindow::backgroundColourId)); 
-	g.setColour(Colours::white);
-	float xCenter = (getWidth() / 4.f) + 10.f;
-	float yCenter = getHeight() - (getHeight() - 60.f) / 2.f;
-	float r = 52;
-	xCenter = getWidth() - xCenter;
 }
 
 void FilterAudioProcessorEditor::resized()
 {
-	auto area = getLocalBounds().reduced(40, 20);
+	auto area = getLocalBounds().reduced(20, 20);
 	auto magArea = area.removeFromTop(100.f);
 	magArea.removeFromLeft(10.f);
 	magArea.removeFromRight(10.f);

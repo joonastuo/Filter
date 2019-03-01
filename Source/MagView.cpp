@@ -42,25 +42,27 @@ void MagView::paint (Graphics& g)
 	
 	// Needed variables
 	float fftLen = fftSize / 2.f;
-	float scaleX = getWidth() / log10(fftLen - 7) ;
+    float fs = 44100;
+
+    float minX  = log10(20.f * pow(2, fftOrder) / fs);
+	float scaleX = getWidth() / (log10(fftLen) - minX) ;
 	float scaleY = (getHeight() / 2.f) / 20.f;
 	float endX = 0.f;
 	float endY = 0.f;
 	bool startFound = false;
-    float fs = 44100;
-    float fScale = fs / fftSize;
+    // float fScale = fs / fftSize;
     
 	// Path of the frequency response
 	Path myPath;
-    float freq[28] = {10.f, 20.f, 30.f, 40.f, 50.f, 60.f, 70.f, 80.f, 90.f,
+    float freq[27] = {20.f, 30.f, 40.f, 50.f, 60.f, 70.f, 80.f, 90.f,
                   100.f, 200.f, 300.f, 400.f, 500.f, 600.f, 700.f, 800.f, 900.f,
                   1000.f, 2000.f, 3000.f, 4000.f, 5000.f, 6000.f, 7000.f, 8000.f,
                   9000.f, 10000.f};
-    for (auto i = 0; i < 29; ++i)
+    for (auto i = 0; i < 27; ++i)
     {
-        float markX = log10((freq[i] * pow(2, fftOrder)) / fs) * scaleX;
+        float markX = (log10(((freq[i]) * pow(2, fftOrder)) / fs) - minX) * scaleX;
         g.setColour(Colours::white.darker(.8f));
-        float myDash[2] = { 4.f, 4.f };
+        float myDash[2] = { 2.f, 2.f };
         if (freq[i] == 10 || freq[i] == 100 || freq[i] == 1000 || freq[i] == 10000)
         {
             g.drawLine(markX, 0.f, markX, getHeight(),1.f);
@@ -85,20 +87,13 @@ void MagView::paint (Graphics& g)
     }
     g.setColour(Colours::white);
     
-	for (auto i = 7; i < fftLen; ++i)
+	for (auto i = 0; i < fftLen; ++i)
 	{
 		// x and y in the log10 scale
-		endX = i == 0 ? 0.f : log10(i) * scaleX;
+		endX = i == 0 ? 0.f : (log10(i) - minX) * scaleX;
 		endY = (getHeight()/2.f - 20.f * log10(mFilteredImpulse[i])*scaleY) ;
 		
-		if (round(i*fScale) == 1000.f)
-		{
-			g.setColour(Colours::white.darker(.8f));
-			float myDash[2] = { 4.f, 4.f };
-			g.drawDashedLine(Line<float>(endX, 0.f, endX, getHeight()), myDash, 2, 1.f);
-			g.setColour(Colours::white);
-		}
-
+		
 		// Start of the path
 		if (startFound == false && (endY > 0.f && endY < getHeight() + 20.f))
 		{
