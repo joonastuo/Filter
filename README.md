@@ -8,9 +8,11 @@ Filter plugin made with JUCE. A screenshot of the plugin can be seen below.
 </p>
 			
 ## Current features
-- Filter type: LP, HP, BP
+* Controllable parameters:
+	- Frequency: Center frequency of the filter
+	- Resonance
+	- Filter type: LP, HP, BP
 - FIlter design: JUCE StateVariableFilter
-- Parameters: Center frequency, resonance
 - Graph of magnitude response
 
 ## Future features
