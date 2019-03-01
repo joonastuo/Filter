@@ -4,7 +4,7 @@ Filter
 Filter plugin made with JUCE. A screenshot of the plugin can be seen below.
 
 <p align="center">
-	<img src="Images/filter.png" width="400">
+	<img src="Images/filter.png" width="300">
 </p>
 			
 ## Current features
