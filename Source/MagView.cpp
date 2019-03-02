@@ -30,12 +30,12 @@ void MagView::paint (Graphics& g)
 
 
 	g.setColour(Colours::white.darker(.8f));
-    g.drawLine(0.f, getHeight() / 2.f, getWidth(), getHeight() / 2.f, 1.f);
+    g.drawLine(0.f, getHeight() / 2.f, getWidth(), getHeight() / 2.f, .2f);
     Line<float> newLine (0.f, getHeight() / 4.f, getWidth(), getHeight() / 4.f);
     float myDash[2] = { 4.f, 4.f };
-    g.drawDashedLine(newLine, myDash, 2, 1.f);
+    g.drawDashedLine(newLine, myDash, 2, .5f);
     Line<float> newLine1 (0.f, getHeight() * .75f, getWidth(), getHeight() * .75f);
-    g.drawDashedLine(newLine1, myDash, 2, 1.f);
+    g.drawDashedLine(newLine1, myDash, 2, .5f);
 
 
 	// Graph frequency response
@@ -44,7 +44,7 @@ void MagView::paint (Graphics& g)
 	float fftLen = fftSize / 2.f;
     float fs = 44100;
 
-    float minX  = log10(20.f * pow(2, fftOrder) / fs);
+    float minX  = log10(20.f * pow(2.f, fftOrder) / fs);
 	float scaleX = getWidth() / (log10(fftLen) - minX) ;
 	float scaleY = (getHeight() / 2.f) / 20.f;
 	float endX = 0.f;
@@ -54,18 +54,18 @@ void MagView::paint (Graphics& g)
     
 	// Path of the frequency response
 	Path myPath;
-    float freq[27] = {20.f, 30.f, 40.f, 50.f, 60.f, 70.f, 80.f, 90.f,
+    float freq[26] = {30.f, 40.f, 50.f, 60.f, 70.f, 80.f, 90.f,
                   100.f, 200.f, 300.f, 400.f, 500.f, 600.f, 700.f, 800.f, 900.f,
                   1000.f, 2000.f, 3000.f, 4000.f, 5000.f, 6000.f, 7000.f, 8000.f,
                   9000.f, 10000.f};
-    for (auto i = 0; i < 27; ++i)
+    for (auto i = 0; i < 26; ++i)
     {
-        float markX = (log10(((freq[i]) * pow(2, fftOrder)) / fs) - minX) * scaleX;
+        float markX = (log10(((freq[i]) * pow(2.f, fftOrder)) / fs) - minX) * scaleX;
         g.setColour(Colours::white.darker(.8f));
         float myDash[2] = { 2.f, 2.f };
         if (freq[i] == 10 || freq[i] == 100 || freq[i] == 1000 || freq[i] == 10000)
         {
-            g.drawLine(markX, 0.f, markX, getHeight(),1.f);
+            g.drawLine(markX, 0.f, markX, getHeight(),.5f);
             if (freq[i] == 1000)
             {
                 g.setColour(Colours::white);
