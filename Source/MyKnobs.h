@@ -94,7 +94,7 @@ public:
 		p.lineTo(firstX, firstY);
 		Path roundedPath = p.createPathWithRoundedCorners(20.0f);
 		Colour myColour = findColour(0x1005700);
-		myColour = myColour.darker(.2f);
+		myColour = myColour.darker(.4f);
 		g.setColour(myColour);
 		g.fillPath(roundedPath);
 		g.setColour(Colours::white);

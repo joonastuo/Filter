@@ -16,6 +16,12 @@
       <FILE id="dTN4pK" name="MagView.h" compile="0" resource="0" file="Source/MagView.h"/>
       <FILE id="yUxjyd" name="Identifiers.h" compile="0" resource="0" file="Source/Identifiers.h"/>
       <FILE id="PDgCtd" name="MyKnobs.h" compile="0" resource="0" file="Source/MyKnobs.h"/>
+      <FILE id="s9GQYG" name="LPButtonLookAndFeel.h" compile="0" resource="0"
+            file="Source/LPButtonLookAndFeel.h"/>
+      <FILE id="vluaVJ" name="BPButtonLookAndFeel.h" compile="0" resource="0"
+            file="Source/BPButtonLookAndFeel.h"/>
+      <FILE id="jNCEY2" name="HPButtonLookAndFeel.h" compile="0" resource="0"
+            file="Source/HPButtonLookAndFeel.h"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
