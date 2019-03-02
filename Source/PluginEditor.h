@@ -15,11 +15,14 @@
 #include "Identifiers.h"
 #include "MyKnobs.h"
 #include "MagView.h"
+#include "LPButtonLookAndFeel.h"
+#include "HPButtonLookAndFeel.h"
+#include "BPButtonLookAndFeel.h"
 
 //==============================================================================
 /**
 */
-class FilterAudioProcessorEditor  : public AudioProcessorEditor
+class FilterAudioProcessorEditor  : public AudioProcessorEditor, TextButton::Listener
 {
 public:
     FilterAudioProcessorEditor (FilterAudioProcessor&);
@@ -29,11 +32,15 @@ public:
     void paint (Graphics&) override;
     void resized() override;
 	void initialiseGUI();
+	void buttonClicked(Button* b) override;
 private:
     FilterAudioProcessor& processor;
 	AudioProcessorValueTreeState& mParameters;
 	MagView mMagView;
 	KnobLookAndFeel knobLookAndFeel;
+	LPButtonLookAndFeel mLPButtonLookAndFeel;
+	HPButtonLookAndFeel mHPButtonLookAndFeel;
+	BPButtonLookAndFeel mBPButtonLookAndFeel;
 
 	// GUI elements
 	Label mFcLabel;
@@ -42,6 +49,10 @@ private:
 
 	Slider mFcSlider;
 	Slider mResSlider;
+
+	TextButton mLPButton;
+	TextButton mHPButton;
+	TextButton mBPButton;
 
 	ComboBox mSelectFilter;
 	// Attachments

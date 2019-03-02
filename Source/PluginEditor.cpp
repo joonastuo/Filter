@@ -21,6 +21,7 @@ FilterAudioProcessorEditor::FilterAudioProcessorEditor (FilterAudioProcessor& p)
 {
     setSize (350, 240);
 	initialiseGUI();
+	
 }
 
 FilterAudioProcessorEditor::~FilterAudioProcessorEditor() {}
@@ -34,7 +35,7 @@ void FilterAudioProcessorEditor::paint (Graphics& g)
 void FilterAudioProcessorEditor::resized()
 {
 	auto area = getLocalBounds().reduced(20, 20);
-	auto magArea = area.removeFromTop(100.f);
+	auto magArea = area.removeFromTop(area.getHeight() / 2.f);
 	magArea.removeFromLeft(10.f);
 	magArea.removeFromRight(10.f);
 	mMagView.setBounds(magArea);
@@ -45,9 +46,15 @@ void FilterAudioProcessorEditor::resized()
 	mFcSlider.setBounds(mFreqArea);
 	mResLabel.setBounds(mResArea.removeFromBottom(20.f));
 	mResSlider.setBounds(mResArea);
-	area.removeFromTop(10.f);
-	mSelectLabel.setBounds(area.removeFromTop(25.f));
-	mSelectFilter.setBounds(area.removeFromTop(30.f));
+	area.removeFromTop(20.f);
+	mLPButton.setBounds(area.removeFromLeft(40.f));
+	area.removeFromLeft(5.f);
+	mHPButton.setBounds(area.removeFromLeft(40.f));
+	area.removeFromLeft(5.f);
+	mBPButton.setBounds(area.removeFromLeft(40.f));
+	//area.removeFromTop(10.f);
+	//mSelectLabel.setBounds(area.removeFromTop(25.f));
+	//mSelectFilter.setBounds(area.removeFromTop(30.f));
 }
 
 void FilterAudioProcessorEditor::initialiseGUI()
@@ -86,4 +93,85 @@ void FilterAudioProcessorEditor::initialiseGUI()
 	addAndMakeVisible(mFcLabel);
 	addAndMakeVisible(mSelectLabel);
 	addAndMakeVisible(mMagView);
+	// Set up buttons
+	mLPButton.setSize(40.f, 30.f);
+	mLPButton.setLookAndFeel(&mLPButtonLookAndFeel);
+	addAndMakeVisible(mLPButton);
+	mHPButton.setSize(40.f, 30.f);
+	mHPButton.setLookAndFeel(&mHPButtonLookAndFeel);
+	addAndMakeVisible(mHPButton);
+	mBPButton.setSize(40.f, 30.f);
+	mBPButton.setLookAndFeel(&mBPButtonLookAndFeel);
+	addAndMakeVisible(mBPButton);
+	mLPButton.addListener(this);
+	mHPButton.addListener(this);
+	mBPButton.addListener(this);
+	mLPButton.setClickingTogglesState(true);
+	mHPButton.setClickingTogglesState(true);
+	mBPButton.setClickingTogglesState(true);
+	int filterType = *mParameters.getRawParameterValue("selectFilter");
+	if (filterType == 0)
+		mLPButton.setToggleState(true, true);
+	else if (filterType == 1)
+		mHPButton.setToggleState(true, true);
+	else
+		mBPButton.setToggleState(true, true);
+}
+
+void FilterAudioProcessorEditor::buttonClicked(Button* b)
+{
+	Value filterType = mParameters.getParameterAsValue("selectFilter");
+	// Lowpass button
+	if (b == &mLPButton)
+	{
+		filterType = 0;
+		if (mLPButton.getToggleState())
+		{
+			if (mHPButton.getToggleState())
+			{
+				mHPButton.setToggleState(false, false);
+				mLPButton.setToggleState(true, false);
+			}
+			if (mBPButton.getToggleState())
+			{
+				mBPButton.setToggleState(false, false);
+				mLPButton.setToggleState(true, false);
+			}
+		}
+	}
+	if (b == &mHPButton)
+	{
+		filterType = 1;
+		if (mHPButton.getToggleState())
+		{
+			if (mLPButton.getToggleState())
+			{
+				mLPButton.setToggleState(false, false);
+				mHPButton.setToggleState(true, false);
+			}
+			if (mBPButton.getToggleState())
+			{
+				mBPButton.setToggleState(false, false);
+				mHPButton.setToggleState(true, false);
+			}
+		}
+	}
+	if (b == &mBPButton)
+	{
+		filterType = 2;
+		if (mBPButton.getToggleState())
+		{
+			if (mLPButton.getToggleState())
+			{
+				mLPButton.setToggleState(false, false);
+				mBPButton.setToggleState(true, false);
+			}
+			if (mHPButton.getToggleState())
+			{
+				mHPButton.setToggleState(false, false);
+				mBPButton.setToggleState(true, false);
+			}
+		}
+	}
+	repaint();
 }
