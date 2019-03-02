@@ -23,6 +23,7 @@ public:
 	~MagView();
 
 	void paint(Graphics&) override;
+	void paintMarkers(Graphics& g, float scaleX, float minX, float fs);
 	void resized() override;
 	void updateFilter();
 	void timerCallback() override;
