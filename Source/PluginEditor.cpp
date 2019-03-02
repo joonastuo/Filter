@@ -21,7 +21,7 @@ FilterAudioProcessorEditor::FilterAudioProcessorEditor (FilterAudioProcessor& p)
 {
     setSize (350, 240);
 	initialiseGUI();
-	buttonClicked(&mLPButton);
+	
 }
 
 FilterAudioProcessorEditor::~FilterAudioProcessorEditor() {}
@@ -35,7 +35,7 @@ void FilterAudioProcessorEditor::paint (Graphics& g)
 void FilterAudioProcessorEditor::resized()
 {
 	auto area = getLocalBounds().reduced(20, 20);
-	auto magArea = area.removeFromTop(100.f);
+	auto magArea = area.removeFromTop(area.getHeight() / 2.f);
 	magArea.removeFromLeft(10.f);
 	magArea.removeFromRight(10.f);
 	mMagView.setBounds(magArea);
@@ -109,6 +109,13 @@ void FilterAudioProcessorEditor::initialiseGUI()
 	mLPButton.setClickingTogglesState(true);
 	mHPButton.setClickingTogglesState(true);
 	mBPButton.setClickingTogglesState(true);
+	int filterType = *mParameters.getRawParameterValue("selectFilter");
+	if (filterType == 0)
+		mLPButton.setToggleState(true, true);
+	else if (filterType == 1)
+		mHPButton.setToggleState(true, true);
+	else
+		mBPButton.setToggleState(true, true);
 }
 
 void FilterAudioProcessorEditor::buttonClicked(Button* b)
@@ -118,51 +125,53 @@ void FilterAudioProcessorEditor::buttonClicked(Button* b)
 	if (b == &mLPButton)
 	{
 		filterType = 0;
-		if (!mLPButton.getToggleState())
+		if (mLPButton.getToggleState())
 		{
 			if (mHPButton.getToggleState())
 			{
-				mHPButton.setToggleState(false, true);
-				mLPButton.setToggleState(true, true);
+				mHPButton.setToggleState(false, false);
+				mLPButton.setToggleState(true, false);
 			}
 			if (mBPButton.getToggleState())
 			{
-				mBPButton.setToggleState(false, true);
-				mLPButton.setToggleState(true, true);
+				mBPButton.setToggleState(false, false);
+				mLPButton.setToggleState(true, false);
 			}
 		}
 	}
 	if (b == &mHPButton)
 	{
 		filterType = 1;
-		if (!mHPButton.getToggleState())
+		if (mHPButton.getToggleState())
 		{
 			if (mLPButton.getToggleState())
 			{
-				mLPButton.setToggleState(false, true);
-				mHPButton.setToggleState(true, true);
+				mLPButton.setToggleState(false, false);
+				mHPButton.setToggleState(true, false);
 			}
 			if (mBPButton.getToggleState())
 			{
-				mBPButton.setToggleState(false, true);
-				mHPButton.setToggleState(true, true);
+				mBPButton.setToggleState(false, false);
+				mHPButton.setToggleState(true, false);
 			}
 		}
 	}
 	if (b == &mBPButton)
 	{
 		filterType = 2;
-		if (!mBPButton.getToggleState())
+		if (mBPButton.getToggleState())
 		{
 			if (mLPButton.getToggleState())
 			{
-				mLPButton.setToggleState(false, true);
-				mBPButton.setToggleState(true, true);
+				mLPButton.setToggleState(false, false);
+				mBPButton.setToggleState(true, false);
 			}
 			if (mHPButton.getToggleState())
 			{
-				mHPButton.setToggleState(false, true);
+				mHPButton.setToggleState(false, false);
+				mBPButton.setToggleState(true, false);
 			}
 		}
 	}
+	repaint();
 }

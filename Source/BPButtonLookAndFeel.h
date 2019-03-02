@@ -23,7 +23,7 @@ public:
 		float height = button.getHeight();
 
 		Path buttonPath;
-		buttonPath.startNewSubPath(0.f, height * .2f);
+		buttonPath.startNewSubPath(0.f, height * .5f);
 		buttonPath.lineTo(0.f, height * .8f);
 		buttonPath.lineTo(width * .2f, height);
 		buttonPath.lineTo(width * .8f, height);
@@ -32,7 +32,7 @@ public:
 		buttonPath.lineTo(width * .8f, 0.f);
 		buttonPath.lineTo(width * .2f, 0.f);
 		buttonPath.lineTo(0.f, height * .2f);
-		buttonPath.lineTo(0.f, height * .8f);
+		buttonPath.lineTo(0.f, height * .5f);
 		Path roundedButtonPath = buttonPath.createPathWithRoundedCorners(10.0f);
 		g.setColour(backgroundColour);
 		g.fillPath(roundedButtonPath);
@@ -42,7 +42,7 @@ public:
 		else
 			g.setColour(Colours::white.darker(.8f));
 
-		g.strokePath(roundedButtonPath, PathStrokeType(1.f));
+		//g.strokePath(roundedButtonPath, PathStrokeType(1.f));
 
 		// Graph of LP filter
 
