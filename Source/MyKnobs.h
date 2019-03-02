@@ -61,7 +61,6 @@ public:
 			// Draw ticks
 			if (abs(i) % 36 == 18)
 				g.fillEllipse(endX - 1.4f, endY - 1.4f, 2.8f, 2.8f);
-				//g.drawLine(startX, startY, endX, endY, 2.f);
 		}
 	}
 	void paintKnob(Graphics& g, float xOrig, float yOrig, float r, float startAngle, float endAngle)
@@ -90,14 +89,14 @@ public:
 			}
 
 		}
-		p.lineTo(xOrig, yOrig + 8.f);
+		p.lineTo(xOrig, yOrig);
 		p.lineTo(firstX, firstY);
-		Path roundedPath = p.createPathWithRoundedCorners(20.0f);
+		Path roundedPath = p.createPathWithRoundedCorners(10.0f);
 		Colour myColour = findColour(0x1005700);
-		myColour = myColour.darker(.4f);
+		myColour = myColour.darker(.8f);
 		g.setColour(myColour);
 		g.fillPath(roundedPath);
 		g.setColour(Colours::white);
-		g.strokePath(roundedPath, PathStrokeType(1.f));
+		// g.strokePath(roundedPath, PathStrokeType(1.f));
 	}
 };
