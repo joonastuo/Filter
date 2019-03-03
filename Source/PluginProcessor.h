@@ -55,13 +55,16 @@ public:
     //==============================================================================
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+
+    //==============================================================================
+	void initialiseValueTree();
 	AudioProcessorValueTreeState& getState();
 	void updateFilter();
 
 private:
+	// ValueTree for storing plugin parameters
 	AudioProcessorValueTreeState mParameters;
-	float mSliderWidth = 50;
-	float mSliderHeight = 100;
+	// Filter
 	dsp::ProcessorDuplicator<dsp::StateVariableFilter::Filter<float>, 
 							 dsp::StateVariableFilter::Parameters <float>> mStateVariableFilter;
 

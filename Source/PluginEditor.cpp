@@ -19,7 +19,9 @@ FilterAudioProcessorEditor::FilterAudioProcessorEditor (FilterAudioProcessor& p)
 	  mParameters(p.getState()),
 	  mMagView(p.getState())
 {
+	// Plugin size
     setSize (350, 240);
+	// Initialise GUI elements
 	initialiseGUI();
 	
 }
@@ -29,36 +31,45 @@ FilterAudioProcessorEditor::~FilterAudioProcessorEditor() {}
 //==============================================================================
 void FilterAudioProcessorEditor::paint (Graphics& g) 
 {
+	// Plugin background
 	g.fillAll(getLookAndFeel().findColour(ResizableWindow::backgroundColourId)); 
 }
 
 void FilterAudioProcessorEditor::resized()
 {
+	// Plugin area, reduce from sides
 	auto area = getLocalBounds().reduced(20, 20);
+	// Area of magitude response component
 	auto magArea = area.removeFromTop(area.getHeight() / 2.f);
 	magArea.removeFromLeft(10.f);
 	magArea.removeFromRight(10.f);
 	mMagView.setBounds(magArea);
+
+	// Rest of the area for knobs and buttons
 	area.removeFromTop(10.f);
+	// Width of the knobs
 	auto sliderWidth = .25 * area.getWidth();
+	// Knob areas
 	auto mFreqArea = area.removeFromLeft(sliderWidth);
 	auto mResArea = area.removeFromLeft(sliderWidth);
 	mFreqArea.removeFromTop(10.f);
 	mResArea.removeFromTop(10.f);
+	// Set knob and label bounds
 	mFcLabel.setBounds(mFreqArea.removeFromBottom(16.f));
 	mFcSlider.setBounds(mFreqArea);
 	mResLabel.setBounds(mResArea.removeFromBottom(16.f));
 	mResSlider.setBounds(mResArea);
+	// Set filter selection buttons
 	area.removeFromTop(20.f);
 	area.removeFromLeft(15.f);
+	// LP button bounds
 	mLPButton.setBounds(area.removeFromLeft(40.f));
 	area.removeFromLeft(5.f);
+	// HP button bounds
 	mHPButton.setBounds(area.removeFromLeft(40.f));
 	area.removeFromLeft(5.f);
+	// BP button bounds
 	mBPButton.setBounds(area.removeFromLeft(40.f));
-	//area.removeFromTop(10.f);
-	//mSelectLabel.setBounds(area.removeFromTop(25.f));
-	//mSelectFilter.setBounds(area.removeFromTop(30.f));
 }
 
 void FilterAudioProcessorEditor::initialiseGUI()
@@ -75,14 +86,9 @@ void FilterAudioProcessorEditor::initialiseGUI()
 	// Slider attachments
 	mFcAttachment.reset(new SliderAttachment(mParameters, "fc", mFcSlider));
 	mResAttachment.reset(new SliderAttachment(mParameters, "res", mResSlider));
-	mSelectAttachment.reset(new ComboBoxAttachment(mParameters, "selectFilter", mSelectFilter));
+	// fc slider into log10 scale
 	mFcSlider.setSkewFactorFromMidPoint(1000.0);
-	// Set up combo box	
-	mSelectFilter.addItemList({ "Low Pass", "High Pass", "Band Pass" }, 1);
-	float selectFilter = *mParameters.getRawParameterValue("selectFilter");
-	mSelectFilter.setSelectedItemIndex(selectFilter, true);
-	mSelectFilter.setJustificationType(Justification::centred);
-	addAndMakeVisible(mSelectFilter);
+
 	// Set up Labels
 	mFcLabel.setText("CUT", dontSendNotification);
 	mResLabel.setText("RES", dontSendNotification);
@@ -177,5 +183,4 @@ void FilterAudioProcessorEditor::buttonClicked(Button* b)
 			}
 		}
 	}
-	repaint();
 }

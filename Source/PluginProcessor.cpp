@@ -25,13 +25,27 @@ FilterAudioProcessor::FilterAudioProcessor()
 	mParameters(*this, nullptr)
 #endif
 {
+	initialiseValueTree();
+}
+
+void FilterAudioProcessor::initialiseValueTree()
+{
+	// Range of filter centre frequency (20 - 20 000 Hz)
 	NormalisableRange<float> fcRange(20.f, 20000.f);
-	NormalisableRange<float> gainRange(0.5f, 5.f);
+	// Range of filter resonance
+	NormalisableRange<float> resRange(0.5f, 5.f);
+	// Range of filter type selection (0=LP, 1=HP, 2=BP)
 	NormalisableRange<float> selectRange(0, 2);
+	// Add centre frequency to ValueTree
 	mParameters.createAndAddParameter("fc", "Freq", String(), fcRange, 1000.f, nullptr, nullptr);
-	mParameters.createAndAddParameter("res", "Res", String(), gainRange, 1.f, nullptr, nullptr);
+	// Add resonance to ValueTree
+	mParameters.createAndAddParameter("res", "Res", String(), resRange, 1.f, nullptr, nullptr);
+	// Add filter type selection to ValueTree
 	mParameters.createAndAddParameter("selectFilter", "SelectFilter" , String(), selectRange, 0, nullptr, nullptr);
+	// Initialise ValueTree
 	mParameters.state = ValueTree("FilterParameters");
+	// Set sampling frequency as a value tree parameter
+	// so it can be accessed trought mParameters.state
 	mParameters.state.setProperty(IDs::fs, 44100.f, nullptr);
 }
 
@@ -104,12 +118,16 @@ void FilterAudioProcessor::changeProgramName (int index, const String& newName)
 //==============================================================================
 void FilterAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+	// Set current sampling rate as fs in ValueTree
 	mParameters.state.setProperty(IDs::fs, sampleRate, nullptr);
+	// Structure containing information needed by the filter
+	// passed to the filter with prepare(spec)
 	dsp::ProcessSpec spec;
 	spec.sampleRate = sampleRate;
 	spec.maximumBlockSize = samplesPerBlock;
 	spec.numChannels = getTotalNumOutputChannels();
 	mStateVariableFilter.prepare(spec);
+	// Reset filters processing pipeline
 	mStateVariableFilter.reset();
 }
 
@@ -145,32 +163,40 @@ bool FilterAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) c
 
 void FilterAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-    ScopedNoDenormals noDenormals;
-
-	// Use JUCE filter
+	// Buffer into an audio block
 	dsp::AudioBlock<float> block(buffer);
+	// Update filter
 	updateFilter();
+	// Apply current design of StateVariableFilter to input buffer
 	mStateVariableFilter.process(dsp::ProcessContextReplacing <float>(block));
 }
 
 void FilterAudioProcessor::updateFilter()
 {
+	// Centre frequency 
 	float fc = *mParameters.getRawParameterValue("fc");
-	float gain = *mParameters.getRawParameterValue("res");
+	// Resonance
+	float res = *mParameters.getRawParameterValue("res");
+	// Sampling frequency
 	float fs = mParameters.state[IDs::fs];
-	float selectFilter = *mParameters.getRawParameterValue("selectFilter");
+	// Filter type
+	float filterType = *mParameters.getRawParameterValue("selectFilter");
 
-	mStateVariableFilter.state->setCutOffFrequency(fs, fc, gain);
+	// Set filter fs, fc and res
+	mStateVariableFilter.state->setCutOffFrequency(fs, fc, res);
 
-	if (selectFilter == 0)
+	// Low pass filter
+	if (filterType == 0)
 	{
 		mStateVariableFilter.state->type = dsp::StateVariableFilter::Parameters<float>::Type::lowPass;
 	}
-	else if (selectFilter == 1)
+	// High pass filter
+	else if (filterType == 1)
 	{
 		mStateVariableFilter.state->type = dsp::StateVariableFilter::Parameters<float>::Type::highPass;
 	}
-	else if (selectFilter == 2)
+	// Band pass filter
+	else if (filterType == 2)
 	{
 		mStateVariableFilter.state->type = dsp::StateVariableFilter::Parameters<float>::Type::bandPass;
 	}
@@ -204,6 +230,8 @@ void FilterAudioProcessor::setStateInformation (const void* data, int sizeInByte
 			mParameters.replaceState(ValueTree::fromXml(*xmlState));
 }
 
+//==============================================================================
+// Return a reference of filter parameters
 AudioProcessorValueTreeState & FilterAudioProcessor::getState()
 {
 	return mParameters;

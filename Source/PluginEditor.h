@@ -34,34 +34,40 @@ public:
 	void initialiseGUI();
 	void buttonClicked(Button* b) override;
 private:
+	// Reference to plugin processor
     FilterAudioProcessor& processor;
+	// Reference to ValueTree
 	AudioProcessorValueTreeState& mParameters;
+	// Component class that paints Magnitude response of filter
 	MagView mMagView;
+
+	// LookAndFeel-classes to customize slider and button look
 	KnobLookAndFeel knobLookAndFeel;
 	LPButtonLookAndFeel mLPButtonLookAndFeel;
 	HPButtonLookAndFeel mHPButtonLookAndFeel;
 	BPButtonLookAndFeel mBPButtonLookAndFeel;
 
 	// GUI elements
+
+	// Labels
 	Label mFcLabel;
 	Label mResLabel;
 	Label mSelectLabel;
 
+	// Sliders
 	Slider mFcSlider;
 	Slider mResSlider;
 
+	// Buttons
 	TextButton mLPButton;
 	TextButton mHPButton;
 	TextButton mBPButton;
 
-	ComboBox mSelectFilter;
-	// Attachments
 	typedef AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
-	typedef AudioProcessorValueTreeState::ComboBoxAttachment ComboBoxAttachment;
 	
+	// Attachments so that ValueTree parameters update with slier value change
 	std::unique_ptr<SliderAttachment> mFcAttachment;
 	std::unique_ptr<SliderAttachment> mResAttachment;
-	std::unique_ptr<ComboBoxAttachment> mSelectAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterAudioProcessorEditor)
 };

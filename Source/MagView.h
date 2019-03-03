@@ -35,7 +35,9 @@ public:
 	};
 
 private:
+	// Reference of plugin parameters
 	AudioProcessorValueTreeState& mParameters;
+	// Filter to draw magnitude impulse response
 	dsp::StateVariableFilter::Filter<float> mStateVariableFilter;
 	dsp::FFT mFFT;
 	float mImpulse[fftSize] = { 0.0f };

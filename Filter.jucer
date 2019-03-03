@@ -14,7 +14,7 @@
         <FILE id="icF8kq" name="Filter.cpp" compile="1" resource="0" file="Source/Filter.cpp"/>
         <FILE id="pVOpFk" name="Filter.h" compile="0" resource="0" file="Source/Filter.h"/>
       </GROUP>
-      <GROUP id="{201C6098-B9CB-FF21-83E3-D33F07951F1D}" name="View">
+      <GROUP id="{201C6098-B9CB-FF21-83E3-D33F07951F1D}" name="Components">
         <FILE id="AYECgh" name="MagView.cpp" compile="1" resource="0" file="Source/MagView.cpp"/>
         <FILE id="dTN4pK" name="MagView.h" compile="0" resource="0" file="Source/MagView.h"/>
       </GROUP>
