@@ -13,7 +13,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
 #include "Identifiers.h"
-#include "MyKnobs.h"
+#include "KnobLookAndFeel.h"
 #include "MagView.h"
 #include "LPButtonLookAndFeel.h"
 #include "HPButtonLookAndFeel.h"

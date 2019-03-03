@@ -10,18 +10,27 @@
       <FILE id="bRQ90I" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="vnbuKR" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
-      <FILE id="icF8kq" name="Filter.cpp" compile="1" resource="0" file="Source/Filter.cpp"/>
-      <FILE id="pVOpFk" name="Filter.h" compile="0" resource="0" file="Source/Filter.h"/>
-      <FILE id="AYECgh" name="MagView.cpp" compile="1" resource="0" file="Source/MagView.cpp"/>
-      <FILE id="dTN4pK" name="MagView.h" compile="0" resource="0" file="Source/MagView.h"/>
-      <FILE id="yUxjyd" name="Identifiers.h" compile="0" resource="0" file="Source/Identifiers.h"/>
-      <FILE id="PDgCtd" name="MyKnobs.h" compile="0" resource="0" file="Source/MyKnobs.h"/>
-      <FILE id="s9GQYG" name="LPButtonLookAndFeel.h" compile="0" resource="0"
-            file="Source/LPButtonLookAndFeel.h"/>
-      <FILE id="vluaVJ" name="BPButtonLookAndFeel.h" compile="0" resource="0"
-            file="Source/BPButtonLookAndFeel.h"/>
-      <FILE id="jNCEY2" name="HPButtonLookAndFeel.h" compile="0" resource="0"
-            file="Source/HPButtonLookAndFeel.h"/>
+      <GROUP id="{396DC68F-22D2-1D98-D32A-846FB857794E}" name="DSP">
+        <FILE id="icF8kq" name="Filter.cpp" compile="1" resource="0" file="Source/Filter.cpp"/>
+        <FILE id="pVOpFk" name="Filter.h" compile="0" resource="0" file="Source/Filter.h"/>
+      </GROUP>
+      <GROUP id="{201C6098-B9CB-FF21-83E3-D33F07951F1D}" name="View">
+        <FILE id="AYECgh" name="MagView.cpp" compile="1" resource="0" file="Source/MagView.cpp"/>
+        <FILE id="dTN4pK" name="MagView.h" compile="0" resource="0" file="Source/MagView.h"/>
+      </GROUP>
+      <GROUP id="{86DFC632-A376-7F54-7A7F-88E9B224C7CF}" name="LookAndFeel">
+        <FILE id="PDgCtd" name="KnobLookAndFeel.h" compile="0" resource="0"
+              file="Source/KnobLookAndFeel.h"/>
+        <FILE id="s9GQYG" name="LPButtonLookAndFeel.h" compile="0" resource="0"
+              file="Source/LPButtonLookAndFeel.h"/>
+        <FILE id="vluaVJ" name="BPButtonLookAndFeel.h" compile="0" resource="0"
+              file="Source/BPButtonLookAndFeel.h"/>
+        <FILE id="jNCEY2" name="HPButtonLookAndFeel.h" compile="0" resource="0"
+              file="Source/HPButtonLookAndFeel.h"/>
+      </GROUP>
+      <GROUP id="{8B9FFC2C-6528-234E-038C-553D22225B63}" name="Helper">
+        <FILE id="yUxjyd" name="Identifiers.h" compile="0" resource="0" file="Source/Identifiers.h"/>
+      </GROUP>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
