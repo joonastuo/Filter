@@ -23,7 +23,6 @@ FilterAudioProcessorEditor::FilterAudioProcessorEditor (FilterAudioProcessor& p)
     setSize (350, 240);
 	// Initialise GUI elements
 	initialiseGUI();
-	
 }
 
 FilterAudioProcessorEditor::~FilterAudioProcessorEditor() {}
@@ -55,9 +54,9 @@ void FilterAudioProcessorEditor::resized()
 	mFreqArea.removeFromTop(10.f);
 	mResArea.removeFromTop(10.f);
 	// Set knob and label bounds
-	mFcLabel.setBounds(mFreqArea.removeFromBottom(16.f));
+	mFcLabel.setBounds(mFreqArea.removeFromTop(16.f));
 	mFcSlider.setBounds(mFreqArea);
-	mResLabel.setBounds(mResArea.removeFromBottom(16.f));
+	mResLabel.setBounds(mResArea.removeFromTop(16.f));
 	mResSlider.setBounds(mResArea);
 	// Set filter selection buttons
 	area.removeFromTop(20.f);
@@ -90,14 +89,14 @@ void FilterAudioProcessorEditor::initialiseGUI()
 	mFcSlider.setSkewFactorFromMidPoint(1000.0);
 
 	// Set up Labels
-	mFcLabel.setText("CUT", dontSendNotification);
-	mResLabel.setText("RES", dontSendNotification);
-	mSelectLabel.setText("TYPE",dontSendNotification);
+	mFcLabel.setText("Freq", dontSendNotification);
+	mResLabel.setText("Res", dontSendNotification);
+	mSelectLabel.setText("Type",dontSendNotification);
 	mFcLabel.setJustificationType(Justification::centred);
 	mResLabel.setJustificationType(Justification::centred);
 	mSelectLabel.setJustificationType(Justification::centred);
-	mFcLabel.setFont(14);
-	mResLabel.setFont(14);
+	mFcLabel.setFont(16);
+	mResLabel.setFont(16);
 	mSelectLabel.setFont(18);
 	addAndMakeVisible(mResLabel);
 	addAndMakeVisible(mFcLabel);

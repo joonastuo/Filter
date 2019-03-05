@@ -36,86 +36,35 @@ public:
 		// current angle of the slider
 		auto angle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
 
-		// Paint markers
-		paintMarkers(g, centreX, centreY, radius+1.f);
-
-		// Paint knob
-		paintKnob(g, centreX, centreY, radius, rotaryStartAngle, rotaryEndAngle);
-
-		// Circle in the centre of the knob
+		// Draw path of the slider backgound (in darker background colour)
+		Path backgroundArc;
+		backgroundArc.addCentredArc(centreX, centreY, radius, radius, 0.0f, rotaryStartAngle, rotaryEndAngle, true);
+		Colour myColour = findColour(0x1005700);
+		myColour = myColour.darker(.8f);
+		g.setColour(myColour);
+		g.strokePath(backgroundArc, PathStrokeType(3.f, PathStrokeType::curved, PathStrokeType::rounded));
+		// Draw path of slider foreground (in white)
+		Path foregroundArc;
+		foregroundArc.addCentredArc(centreX, centreY, radius, radius, 0.0f, rotaryStartAngle, angle, true);
 		g.setColour(Colours::white);
-		g.fillEllipse(centreX-3.f, centreY-3.f, 6.f, 6.f);
+		g.strokePath(foregroundArc, PathStrokeType(3.f, PathStrokeType::curved, PathStrokeType::rounded));
 
 		// Pointer
 		Path p;
 		auto pointerLength = radius * 1.f;
-		auto pointerThickness = 2.0f;
+		auto pointerThickness = 3.0f;
 		p.addRectangle(-pointerThickness * 0.5f, -radius, pointerThickness, pointerLength);
 		p.applyTransform(AffineTransform::rotation(angle).translated(centreX, centreY));
 		g.setColour(Colours::white);
 		g.fillPath(p);
-	}
-	void paintMarkers(Graphics & g, float xOrig, float yOrig, float r)
-	{
-		// Marker colour
-		g.setColour(Colours::white);
 
-		// Draw markers with a space of 36 degrees
-		for (auto i = -60; i <= 240; ++i)
-		{
-			float rad = i * (M_PI / 180.f);
-			float markerX = xOrig + (r + 5.f) * cos(rad);
-			float markerY = yOrig + (r + 5.f) * -sin(rad);
-
-			// Draw ticks
-			if (abs(i) % 36 == 18)
-				g.fillEllipse(markerX - 1.4f, markerY - 1.4f, 2.8f, 2.8f);
-		}
-	}
-	void paintKnob(Graphics& g, float centreX, float centreY, float radius, float startAngle, float endAngle)
-	{
-		// Path of the knob
-		Path p;
-		bool pathStart = true;
-		float firstX = 0.0f;
-		float firstY = 0.0f;
-		for (auto i = -55; i <= 235; ++i)
-		{
-			// Angle from degrees to radians
-			float radians = i * (M_PI / 180.f);
-			// Marker point (pointX, pointY)
-			float pointX = centreX + radius * cos(radians);
-			float pointY = centreY + radius * -sin(radians);
-
-			// Start path if first point
-			if (pathStart)
-			{
-				p.startNewSubPath(pointX, pointY);
-				// Save start point so path can be ended there
-				firstX = pointX;
-				firstY = pointY;
-				pathStart = false;
-			}
-			// Add point if not start
-			else
-			{
-				p.lineTo(pointX, pointY);
-			}
-
-		}
-		// Path to origin
-		p.lineTo(centreX, centreY);
-		// Path to start point
-		p.lineTo(firstX, firstY);
-		// Make path rounded
-		Path roundedPath = p.createPathWithRoundedCorners(10.0f);
-		// Set colour to darder version of background colour
-		Colour myColour = findColour(0x1005700);
-		myColour = myColour.darker(.8f);
-		g.setColour(myColour);
-		// fill knob background
-		g.fillPath(roundedPath);
-		g.setColour(Colours::white);
-		// g.strokePath(roundedPath, PathStrokeType(1.f));
+		// Draw slider value
+		g.setFont(12);
+		String value = "";
+		if (slider.getValue() > 1000)
+			value = static_cast<String> (round(slider.getValue() / 10.f) / 100.f) + "k";
+		else
+			value = static_cast<String> (round(slider.getValue() * 100.f) / 100.f);
+		g.drawFittedText(value + (slider.getValue() > 10 ? " Hz" : ""), centreX - 30.f, height - 10.f, 60.f, 10.f, Justification::centred, 1);
 	}
 };
