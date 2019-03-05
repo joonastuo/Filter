@@ -20,9 +20,11 @@ FilterAudioProcessorEditor::FilterAudioProcessorEditor (FilterAudioProcessor& p)
 	  mMagView(p.getState())
 {
 	// Plugin size
-    setSize (350, 240);
+    //setSize (140, 140);
 	// Initialise GUI elements
 	initialiseGUI();
+	this->setResizable(true, true);
+	this->setResizeLimits(180, 180, 500, 320);
 }
 
 FilterAudioProcessorEditor::~FilterAudioProcessorEditor() {}
@@ -36,39 +38,64 @@ void FilterAudioProcessorEditor::paint (Graphics& g)
 
 void FilterAudioProcessorEditor::resized()
 {
-	// Plugin area, reduce from sides
-	auto area = getLocalBounds().reduced(20, 20);
-	// Area of magitude response component
-	auto magArea = area.removeFromTop(area.getHeight() / 2.f);
-	magArea.removeFromLeft(10.f);
-	magArea.removeFromRight(10.f);
-	mMagView.setBounds(magArea);
+	auto area = getLocalBounds().reduced(10.f, 10.f);
 
-	// Rest of the area for knobs and buttons
-	area.removeFromTop(10.f);
-	// Width of the knobs
-	auto sliderWidth = .25 * area.getWidth();
-	// Knob areas
-	auto mFreqArea = area.removeFromLeft(sliderWidth);
-	auto mResArea = area.removeFromLeft(sliderWidth);
-	mFreqArea.removeFromTop(10.f);
-	mResArea.removeFromTop(10.f);
-	// Set knob and label bounds
-	mFcLabel.setBounds(mFreqArea.removeFromTop(16.f));
-	mFcSlider.setBounds(mFreqArea);
-	mResLabel.setBounds(mResArea.removeFromTop(16.f));
-	mResSlider.setBounds(mResArea);
-	// Set filter selection buttons
-	area.removeFromTop(20.f);
-	area.removeFromLeft(15.f);
-	// LP button bounds
-	mLPButton.setBounds(area.removeFromLeft(40.f));
-	area.removeFromLeft(5.f);
-	// HP button bounds
-	mHPButton.setBounds(area.removeFromLeft(40.f));
-	area.removeFromLeft(5.f);
-	// BP button bounds
-	mBPButton.setBounds(area.removeFromLeft(40.f));
+	float knobWidth = 60.f;
+	float knobHeight = 60.f;
+	float labelHeight = mLabelFontSize;
+	float buttonWidth = (2.f * knobWidth) / 3.f;
+	float buttonHeight = 30.f;
+
+	FlexBox fcBox;
+	fcBox.justifyContent = FlexBox::JustifyContent::center;
+	fcBox.alignContent = FlexBox::AlignContent::center;
+	fcBox.flexDirection = FlexBox::Direction::column;
+	fcBox.items.addArray({ FlexItem(mFcLabel).withWidth(knobWidth).withHeight(labelHeight),
+						   FlexItem(mFcSlider).withWidth(knobWidth).withHeight(knobHeight) });
+
+	FlexBox resBox;
+	resBox.justifyContent = FlexBox::JustifyContent::center;
+	resBox.alignContent = FlexBox::AlignContent::center;
+	resBox.flexDirection = FlexBox::Direction::column;
+	resBox.items.addArray({ FlexItem(mResLabel).withWidth(knobWidth).withHeight(labelHeight),
+						    FlexItem(mResSlider).withWidth(knobWidth).withHeight(knobHeight) }); 
+	FlexBox sliderBox;
+	sliderBox.justifyContent = FlexBox::JustifyContent::center;
+	sliderBox.alignContent = FlexBox::AlignContent::center;
+	sliderBox.flexDirection = FlexBox::Direction::row;
+	sliderBox.items.addArray({FlexItem(fcBox).withHeight(labelHeight + knobHeight).withWidth(knobWidth), 
+							  FlexItem(resBox).withHeight(labelHeight + knobHeight).withWidth(knobWidth)});
+
+	FlexBox buttonBox;
+	buttonBox.justifyContent = FlexBox::JustifyContent::spaceBetween;
+	buttonBox.alignContent = FlexBox::AlignContent::center;
+	buttonBox.flexDirection = FlexBox::Direction::row;
+	buttonBox.items.addArray({ FlexItem(mLPButton).withWidth(buttonWidth).withHeight(buttonHeight),
+							   FlexItem(mHPButton).withWidth(buttonWidth).withHeight(buttonHeight),
+							   FlexItem(mBPButton).withWidth(buttonWidth).withHeight(buttonHeight) });
+
+	float spaceBetween = 20.f;
+	float parameterWidth = 2 * knobWidth;
+	float parameterHeight = labelHeight + knobHeight + buttonHeight + spaceBetween;
+	
+	FlexBox parameterBox;
+	parameterBox.justifyContent = FlexBox::JustifyContent::center;
+	parameterBox.alignContent = FlexBox::AlignContent::spaceBetween;
+	parameterBox.flexDirection = FlexBox::Direction::column;
+	parameterBox.items.addArray({FlexItem(sliderBox).withWidth(parameterWidth).withHeight(knobHeight + labelHeight),
+							     FlexItem(buttonBox).withWidth(parameterWidth).withHeight(buttonHeight + spaceBetween)});
+	
+	FlexBox masterBox;
+	masterBox.justifyContent = area.getWidth() - parameterWidth > 1.4 * area.getHeight() ? FlexBox::JustifyContent::spaceAround : FlexBox::JustifyContent::center;
+	masterBox.alignContent = FlexBox::AlignContent::center;
+	masterBox.flexDirection = FlexBox::Direction::row;
+	if (area.getWidth() - parameterWidth > 1.4 * area.getHeight())
+		masterBox.items.addArray({ FlexItem(mMagView).withWidth(getWidth() - parameterWidth - 40.f).withHeight(area.getHeight()),
+								   FlexItem(parameterBox).withWidth(parameterWidth).withHeight(parameterHeight) });
+	else
+		masterBox.items.addArray({ FlexItem(parameterBox).withWidth(parameterWidth).withHeight(parameterHeight) });
+
+	masterBox.performLayout(area);
 }
 
 void FilterAudioProcessorEditor::initialiseGUI()
@@ -95,21 +122,21 @@ void FilterAudioProcessorEditor::initialiseGUI()
 	mFcLabel.setJustificationType(Justification::centred);
 	mResLabel.setJustificationType(Justification::centred);
 	mSelectLabel.setJustificationType(Justification::centred);
-	mFcLabel.setFont(16);
-	mResLabel.setFont(16);
-	mSelectLabel.setFont(18);
+	mFcLabel.setFont(mLabelFontSize);
+	mResLabel.setFont(mLabelFontSize);
+	mSelectLabel.setFont(mLabelFontSize);
 	addAndMakeVisible(mResLabel);
 	addAndMakeVisible(mFcLabel);
 	addAndMakeVisible(mSelectLabel);
 	addAndMakeVisible(mMagView);
 	// Set up buttons
-	mLPButton.setSize(40.f, 30.f);
+	mLPButton.setSize(30.f, 20.f);
 	mLPButton.setLookAndFeel(&mLPButtonLookAndFeel);
 	addAndMakeVisible(mLPButton);
-	mHPButton.setSize(40.f, 30.f);
+	mHPButton.setSize(30.f, 20.f);
 	mHPButton.setLookAndFeel(&mHPButtonLookAndFeel);
 	addAndMakeVisible(mHPButton);
-	mBPButton.setSize(40.f, 30.f);
+	mBPButton.setSize(30.f, 20.f);
 	mBPButton.setLookAndFeel(&mBPButtonLookAndFeel);
 	addAndMakeVisible(mBPButton);
 	mLPButton.addListener(this);

@@ -54,6 +54,8 @@ private:
 	Label mResLabel;
 	Label mSelectLabel;
 
+	float mLabelFontSize = 18.f;
+
 	// Sliders
 	Slider mFcSlider;
 	Slider mResSlider;

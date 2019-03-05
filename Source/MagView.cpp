@@ -15,7 +15,7 @@
 MagView::MagView(AudioProcessorValueTreeState& vt) : mParameters(vt), mFFT(fftOrder)
 {
 	// Mag view size
-	setSize(200, 80);
+	//setSize(200, 80);
 	// Start update timer
 	startTimer(10.f);
 }
