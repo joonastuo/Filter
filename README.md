@@ -14,6 +14,8 @@ Filter plugin made with JUCE. A screenshot of the plugin can be seen below.
 	- Filter type: LP, HP, BP
 - FIlter design: JUCE StateVariableFilter
 - Graph of magnitude response
+- Resizable
 
 ## Future features
-- Own filter design
+- Implement state variable filter in filter-class
+- LFO
