@@ -20,11 +20,13 @@ FilterAudioProcessorEditor::FilterAudioProcessorEditor (FilterAudioProcessor& p)
 	  mMagView(p.getState())
 {
 	// Plugin size
-    //setSize (140, 140);
 	// Initialise GUI elements
 	initialiseGUI();
 	this->setResizable(true, true);
-	this->setResizeLimits(180, 180, 500, 320);
+	float maxWidth = 600.f;
+	float maxHeight = 400.f;
+	this->setResizeLimits(160, 160, maxWidth, maxHeight);
+    setSize (270.f, 271.f);
 }
 
 FilterAudioProcessorEditor::~FilterAudioProcessorEditor() {}
@@ -38,64 +40,145 @@ void FilterAudioProcessorEditor::paint (Graphics& g)
 
 void FilterAudioProcessorEditor::resized()
 {
+	// GUI parameters===============================================
+
+	// GUI area
 	auto area = getLocalBounds().reduced(10.f, 10.f);
 
+	// MagView
+	float magViewRatio = mMagViewRatio;
+	float magViewMinHeight = 80.f;
+	float magViewMinWidth = magViewMinHeight * magViewRatio;
+	float magViewHeight = (area.getWidth() / magViewRatio);
+	
+	//Knobs
 	float knobWidth = 60.f;
-	float knobHeight = 60.f;
+	float knobHeight = knobWidth;
 	float labelHeight = mLabelFontSize;
-	float buttonWidth = (2.f * knobWidth) / 3.f;
-	float buttonHeight = 30.f;
 
+	// Buttons
+	float buttonWidth = ((2.f * knobWidth) / 3.f) - 6.f;
+	float buttonHeight = buttonWidth / 1.6f;
+
+	// parameterBox = knobs + buttons
+	float parameterWidth = 2 * knobWidth;
+	float spaceBetween = 20.f;
+	float parameterHeight = labelHeight + knobHeight + buttonHeight + spaceBetween;
+	
+	// Portrait or landscape mode (true if portrait)
+	bool isPortrait = area.getHeight() * 1.5f > area.getWidth();
+	// Is magView shown (portrait & landscape conditions)
+	bool magViewPortraitCondition = area.getHeight() - parameterHeight > magViewMinHeight;
+	bool magViewLandscapeCondition = area.getWidth() - parameterWidth - spaceBetween > magViewMinWidth;
+
+	float magViewPortraitWidth = area.getWidth();
+	float magViewPortraitHeight = magViewPortraitWidth / magViewRatio;
+
+	float magViewLandscapeWidth = area.getWidth() - parameterWidth - spaceBetween;
+	float magViewCurrHeightLandspace = magViewLandscapeWidth / magViewRatio;
+	float magViewLandscapeHeight = magViewCurrHeightLandspace < area.getHeight() ? magViewCurrHeightLandspace : area.getHeight();
+
+	// Perform layout with FlexBox==================================
+	// Frequency knob
 	FlexBox fcBox;
 	fcBox.justifyContent = FlexBox::JustifyContent::center;
-	fcBox.alignContent = FlexBox::AlignContent::center;
-	fcBox.flexDirection = FlexBox::Direction::column;
+	fcBox.alignContent   = FlexBox::AlignContent::center;
+	fcBox.flexDirection  = FlexBox::Direction::column;
 	fcBox.items.addArray({ FlexItem(mFcLabel).withWidth(knobWidth).withHeight(labelHeight),
 						   FlexItem(mFcSlider).withWidth(knobWidth).withHeight(knobHeight) });
-
+	// Resonance knob
 	FlexBox resBox;
 	resBox.justifyContent = FlexBox::JustifyContent::center;
-	resBox.alignContent = FlexBox::AlignContent::center;
-	resBox.flexDirection = FlexBox::Direction::column;
+	resBox.alignContent   = FlexBox::AlignContent::center;
+	resBox.flexDirection  = FlexBox::Direction::column;
 	resBox.items.addArray({ FlexItem(mResLabel).withWidth(knobWidth).withHeight(labelHeight),
 						    FlexItem(mResSlider).withWidth(knobWidth).withHeight(knobHeight) }); 
+
+	// Both kobs and their labels
 	FlexBox sliderBox;
 	sliderBox.justifyContent = FlexBox::JustifyContent::center;
-	sliderBox.alignContent = FlexBox::AlignContent::center;
-	sliderBox.flexDirection = FlexBox::Direction::row;
-	sliderBox.items.addArray({FlexItem(fcBox).withHeight(labelHeight + knobHeight).withWidth(knobWidth), 
-							  FlexItem(resBox).withHeight(labelHeight + knobHeight).withWidth(knobWidth)});
+	sliderBox.alignContent   = FlexBox::AlignContent::center;
+	sliderBox.flexDirection  = FlexBox::Direction::row;
+	sliderBox.items.addArray({ FlexItem(fcBox).withHeight(labelHeight + knobHeight).withWidth(knobWidth), 
+							   FlexItem(resBox).withHeight(labelHeight + knobHeight).withWidth(knobWidth)});
 
+	// Filter type buttons
 	FlexBox buttonBox;
 	buttonBox.justifyContent = FlexBox::JustifyContent::spaceBetween;
-	buttonBox.alignContent = FlexBox::AlignContent::center;
-	buttonBox.flexDirection = FlexBox::Direction::row;
+	buttonBox.alignContent   = FlexBox::AlignContent::center;
+	buttonBox.flexDirection  = FlexBox::Direction::row;
 	buttonBox.items.addArray({ FlexItem(mLPButton).withWidth(buttonWidth).withHeight(buttonHeight),
 							   FlexItem(mHPButton).withWidth(buttonWidth).withHeight(buttonHeight),
 							   FlexItem(mBPButton).withWidth(buttonWidth).withHeight(buttonHeight) });
 
-	float spaceBetween = 20.f;
-	float parameterWidth = 2 * knobWidth;
-	float parameterHeight = labelHeight + knobHeight + buttonHeight + spaceBetween;
-	
+	// Parameter control box (knobs + buttons)
 	FlexBox parameterBox;
 	parameterBox.justifyContent = FlexBox::JustifyContent::center;
-	parameterBox.alignContent = FlexBox::AlignContent::spaceBetween;
-	parameterBox.flexDirection = FlexBox::Direction::column;
-	parameterBox.items.addArray({FlexItem(sliderBox).withWidth(parameterWidth).withHeight(knobHeight + labelHeight),
-							     FlexItem(buttonBox).withWidth(parameterWidth).withHeight(buttonHeight + spaceBetween)});
+	parameterBox.alignContent   = FlexBox::AlignContent::center;
+	parameterBox.flexDirection  = FlexBox::Direction::column;
+	parameterBox.items.addArray({ FlexItem(sliderBox).withWidth(parameterWidth).withHeight(knobHeight + labelHeight),
+							      FlexItem(buttonBox).withWidth(parameterWidth).withHeight(buttonHeight + spaceBetween)});
 	
+	// Master box that lays out all the components in  the window
 	FlexBox masterBox;
-	masterBox.justifyContent = area.getWidth() - parameterWidth > 1.4 * area.getHeight() ? FlexBox::JustifyContent::spaceAround : FlexBox::JustifyContent::center;
-	masterBox.alignContent = FlexBox::AlignContent::center;
-	masterBox.flexDirection = FlexBox::Direction::row;
-	if (area.getWidth() - parameterWidth > 1.4 * area.getHeight())
-		masterBox.items.addArray({ FlexItem(mMagView).withWidth(getWidth() - parameterWidth - 40.f).withHeight(area.getHeight()),
-								   FlexItem(parameterBox).withWidth(parameterWidth).withHeight(parameterHeight) });
-	else
-		masterBox.items.addArray({ FlexItem(parameterBox).withWidth(parameterWidth).withHeight(parameterHeight) });
+	FlexBox magBox;
+	magBox.justifyContent = FlexBox::JustifyContent::center;
+	magBox.alignContent   = FlexBox::AlignContent::center;
+	magBox.flexDirection  = FlexBox::Direction::column;
 
-	masterBox.performLayout(area);
+	// Portrait mode
+	if (isPortrait)
+	{
+
+		// masterBox settings
+		masterBox.alignContent   = FlexBox::AlignContent::center;
+		masterBox.justifyContent = FlexBox::JustifyContent::center;
+		masterBox.flexDirection  = FlexBox::Direction::column;
+		float parameterBoxSpace = 20.f;
+
+		if (magViewPortraitCondition)
+		{
+			// MagView box
+			magBox.items.add(FlexItem(mMagView).withWidth (magViewPortraitWidth).withHeight (magViewPortraitHeight));
+			
+			mMagView.setVisible(true);
+			masterBox.items.addArray({ FlexItem(magBox).withWidth(area.getWidth()).withHeight(magViewPortraitHeight),
+									   FlexItem(parameterBox).withWidth(area.getWidth()).withHeight(parameterHeight + parameterBoxSpace) });
+		}
+		else
+		{
+			mMagView.setVisible(false);
+			masterBox.items.addArray({ FlexItem(parameterBox).withWidth(parameterWidth).withHeight(parameterHeight) });
+		}
+	}
+	// Landscape mode
+	else
+	{
+
+		// masterBox settings
+		masterBox.alignContent   = FlexBox::AlignContent::spaceAround;
+		masterBox.justifyContent = magViewLandscapeCondition ? FlexBox::JustifyContent::spaceBetween : FlexBox::JustifyContent::center;
+		masterBox.flexDirection  = FlexBox::Direction::row;
+
+		float parameterBoxSpace = 20.f;
+
+		if (magViewLandscapeCondition)
+		{
+			mMagView.setVisible(true);
+			// MagView box
+			magBox.items.add(FlexItem(mMagView).withWidth (magViewLandscapeWidth).withHeight (magViewLandscapeHeight));
+			
+			masterBox.items.addArray({ FlexItem(magBox).withWidth(magViewLandscapeWidth).withHeight(area.getHeight()),
+									   FlexItem(parameterBox).withWidth(parameterWidth + parameterBoxSpace).withHeight(area.getHeight()) });
+		}
+		else
+		{
+			mMagView.setVisible(false);
+			masterBox.items.addArray({ FlexItem(parameterBox).withWidth(parameterWidth).withHeight(area.getHeight()) });
+		}
+	}
+	// Perform layout
+	masterBox.performLayout(area.toFloat());
 }
 
 void FilterAudioProcessorEditor::initialiseGUI()
@@ -130,13 +213,15 @@ void FilterAudioProcessorEditor::initialiseGUI()
 	addAndMakeVisible(mSelectLabel);
 	addAndMakeVisible(mMagView);
 	// Set up buttons
-	mLPButton.setSize(30.f, 20.f);
+	float buttonWidth = 20.f;
+	float buttonHeight = 15.f;
+	mLPButton.setSize(buttonWidth, buttonHeight);
 	mLPButton.setLookAndFeel(&mLPButtonLookAndFeel);
 	addAndMakeVisible(mLPButton);
-	mHPButton.setSize(30.f, 20.f);
+	mHPButton.setSize(buttonWidth, buttonHeight);
 	mHPButton.setLookAndFeel(&mHPButtonLookAndFeel);
 	addAndMakeVisible(mHPButton);
-	mBPButton.setSize(30.f, 20.f);
+	mBPButton.setSize(buttonWidth, buttonHeight);
 	mBPButton.setLookAndFeel(&mBPButtonLookAndFeel);
 	addAndMakeVisible(mBPButton);
 	mLPButton.addListener(this);

@@ -40,6 +40,8 @@ private:
 	AudioProcessorValueTreeState& mParameters;
 	// Component class that paints Magnitude response of filter
 	MagView mMagView;
+	// How much wider the magView window is
+	float mMagViewRatio = 2.5f;
 
 	// LookAndFeel-classes to customize slider and button look
 	KnobLookAndFeel knobLookAndFeel;
