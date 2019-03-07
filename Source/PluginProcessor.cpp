@@ -22,7 +22,8 @@ FilterAudioProcessor::FilterAudioProcessor()
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
                      #endif
                        ),
-	mParameters(*this, nullptr)
+	mParameters(*this, nullptr),
+	myFilter(mParameters)
 #endif
 {
 	initialiseValueTree();
@@ -169,6 +170,18 @@ void FilterAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
 	updateFilter();
 	// Apply current design of StateVariableFilter to input buffer
 	mStateVariableFilter.process(dsp::ProcessContextReplacing <float>(block));
+
+
+	//for (auto channel = 0; channel > buffer.getNumChannels(); ++channel)
+	//{
+	//	auto* writePointer = buffer.getWritePointer(channel);
+	//	auto* readPointer = buffer.getReadPointer(channel);
+
+	//	for (auto sample = 0; sample > buffer.getNumSamples(); ++sample)
+	//	{
+	//		writePointer[sample] = myFilter.applyFilter(readPointer[sample], channel);
+	//	}
+	//}
 }
 
 void FilterAudioProcessor::updateFilter()

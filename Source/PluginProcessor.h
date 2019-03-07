@@ -12,6 +12,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Identifiers.h"
+#include "Filter.h"
 
 //==============================================================================
 /**
@@ -64,6 +65,7 @@ public:
 private:
 	// ValueTree for storing plugin parameters
 	AudioProcessorValueTreeState mParameters;
+	MyFilter myFilter;
 	// Filter
 	dsp::ProcessorDuplicator<dsp::StateVariableFilter::Filter<float>, 
 							 dsp::StateVariableFilter::Parameters <float>> mStateVariableFilter;

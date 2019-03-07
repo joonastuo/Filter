@@ -25,15 +25,15 @@ MyFilter::~MyFilter()
 {
 }
 
-float MyFilter::applyFilter(float sample)
+float MyFilter::applyFilter(float sample, int channel)
 {
-	return firstOrderLowPass(sample);
+	return firstOrderLowPass(sample, channel);
 }
 
-float MyFilter::firstOrderLowPass(float sample)
+float MyFilter::firstOrderLowPass(float sample, int channel)
 {
 	float* fcPointer = mParameters.getRawParameterValue("fc");
-	float* gainPointer = mParameters.getRawParameterValue("gain");
+	float* gainPointer = mParameters.getRawParameterValue("res");
 	float fc = *fcPointer;
 	float gain = *gainPointer;
 	float fs = mParameters.state[IDs::fs];
@@ -45,8 +45,8 @@ float MyFilter::firstOrderLowPass(float sample)
 		c = (tan(M_PI * fc / fs) - 1.f) / (tan(M_PI * fc / fs) + 1.f);
 	else
 		c = (tan(M_PI * fc / fs) - V0) / (tan(M_PI * fc / fs) + V0);
-	float xh = sample - c * mPrevXh;
-	float y1 = c * xh + mPrevXh;
-	mPrevXh = xh;
+	float xh = sample - c * mPrevXh[channel];
+	float y1 = c * xh + mPrevXh[channel];
+	mPrevXh[channel] = xh;
 	return H0 * .5f * (sample + y1) + sample;
 }

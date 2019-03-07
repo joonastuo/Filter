@@ -26,7 +26,7 @@ FilterAudioProcessorEditor::FilterAudioProcessorEditor (FilterAudioProcessor& p)
 	float maxWidth = 600.f;
 	float maxHeight = 400.f;
 	this->setResizeLimits(160, 160, maxWidth, maxHeight);
-    setSize (270.f, 271.f);
+    setSize (566.f, 372.f);
 }
 
 FilterAudioProcessorEditor::~FilterAudioProcessorEditor() {}
@@ -66,7 +66,7 @@ void FilterAudioProcessorEditor::resized()
 	float parameterHeight = labelHeight + knobHeight + buttonHeight + spaceBetween;
 	
 	// Portrait or landscape mode (true if portrait)
-	bool isPortrait = area.getHeight() * 1.5f > area.getWidth();
+	bool isPortrait = area.getHeight() * 1.8f > area.getWidth();
 	// Is magView shown (portrait & landscape conditions)
 	bool magViewPortraitCondition = area.getHeight() - parameterHeight > magViewMinHeight;
 	bool magViewLandscapeCondition = area.getWidth() - parameterWidth - spaceBetween > magViewMinWidth;
