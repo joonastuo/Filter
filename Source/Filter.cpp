@@ -16,37 +16,52 @@
 //==============================================================================
 MyFilter::MyFilter(AudioProcessorValueTreeState& vt) : mParameters(vt)
 {
-	//mFs.referTo(mParameters.state, IDs::fs, nullptr);
-	//mFc.referTo(mParameters.state, IDs::fc, nullptr);
-	//mGain.referTo(mParameters.state, IDs::gain, nullptr);
+	// Empty constructor
 }
 
 MyFilter::~MyFilter()
 {
+	// Empty destructor
 }
 
-float MyFilter::applyFilter(float sample, int channel)
+ // Process sample
+float MyFilter::process(float sample, int channel)
 {
-	return firstOrderLowPass(sample, channel);
+	int filterType = *mParameters.getRawParameterValue("selectFilter");
+
+	switch (filterType)
+	{
+		case 0:
+			return lowPass(sample, channel);
+		case 1:
+			return highPass(sample, channel);
+		case 2 :
+			return bandPass(sample, channel);
+		default:
+			return 0.0f;
+	}
 }
 
-float MyFilter::firstOrderLowPass(float sample, int channel)
+float MyFilter::lowPass(float sample, int channel)
 {
-	float* fcPointer = mParameters.getRawParameterValue("fc");
-	float* gainPointer = mParameters.getRawParameterValue("res");
-	float fc = *fcPointer;
-	float gain = *gainPointer;
+	float fc = *mParameters.getRawParameterValue("fc");
+	float res = *mParameters.getRawParameterValue("res");
 	float fs = mParameters.state[IDs::fs];
+	return 0.0f;
+}
 
-	float V0 = pow(10.f, gain / 20.f);
-	float H0 = V0 - 1.f;
-	float c;
-	if (gain > 0)
-		c = (tan(M_PI * fc / fs) - 1.f) / (tan(M_PI * fc / fs) + 1.f);
-	else
-		c = (tan(M_PI * fc / fs) - V0) / (tan(M_PI * fc / fs) + V0);
-	float xh = sample - c * mPrevXh[channel];
-	float y1 = c * xh + mPrevXh[channel];
-	mPrevXh[channel] = xh;
-	return H0 * .5f * (sample + y1) + sample;
+float MyFilter::highPass(float sample, int channel)
+{
+	float fc = *mParameters.getRawParameterValue("fc");
+	float res = *mParameters.getRawParameterValue("res");
+	float fs = mParameters.state[IDs::fs];
+	return 0.0f;
+}
+
+float MyFilter::bandPass(float sample, int channel)
+{
+	float fc = *mParameters.getRawParameterValue("fc");
+	float res = *mParameters.getRawParameterValue("res");
+	float fs = mParameters.state[IDs::fs];
+	return 0.0f;
 }

@@ -230,7 +230,7 @@ void FilterAudioProcessorEditor::initialiseGUI()
 	mLPButton.setClickingTogglesState(true);
 	mHPButton.setClickingTogglesState(true);
 	mBPButton.setClickingTogglesState(true);
-	int filterType = *mParameters.getRawParameterValue("selectFilter");
+	int filterType = *mParameters.getRawParameterValue("filterType");
 	if (filterType == 0)
 		mLPButton.setToggleState(true, true);
 	else if (filterType == 1)
@@ -241,7 +241,7 @@ void FilterAudioProcessorEditor::initialiseGUI()
 
 void FilterAudioProcessorEditor::buttonClicked(Button* b)
 {
-	Value filterType = mParameters.getParameterAsValue("selectFilter");
+	Value filterType = mParameters.getParameterAsValue("filterType");
 	// Lowpass button
 	if (b == &mLPButton)
 	{

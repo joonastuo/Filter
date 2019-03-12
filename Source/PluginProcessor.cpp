@@ -42,7 +42,7 @@ void FilterAudioProcessor::initialiseValueTree()
 	// Add resonance to ValueTree
 	mParameters.createAndAddParameter("res", "Res", String(), resRange, 1.f, nullptr, nullptr);
 	// Add filter type selection to ValueTree
-	mParameters.createAndAddParameter("selectFilter", "SelectFilter" , String(), selectRange, 0, nullptr, nullptr);
+	mParameters.createAndAddParameter("filterType", "FilterType" , String(), selectRange, 0, nullptr, nullptr);
 	// Initialise ValueTree
 	mParameters.state = ValueTree("FilterParameters");
 	// Set sampling frequency as a value tree parameter
@@ -164,6 +164,8 @@ bool FilterAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) c
 
 void FilterAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
+	float fs = mParameters.state[IDs::fs];
+	mTLFO = mTLFO + buffer.getNumSamples() * (1.f / fs);
 	// Buffer into an audio block
 	dsp::AudioBlock<float> block(buffer);
 	// Update filter
@@ -171,15 +173,17 @@ void FilterAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
 	// Apply current design of StateVariableFilter to input buffer
 	mStateVariableFilter.process(dsp::ProcessContextReplacing <float>(block));
 
-
-	//for (auto channel = 0; channel > buffer.getNumChannels(); ++channel)
+	// Apply own filter
+	//float numSamples = buffer.getNumSamples();
+	//
+	//for (auto channel = 0; channel < getTotalNumInputChannels(); ++channel)
 	//{
-	//	auto* writePointer = buffer.getWritePointer(channel);
-	//	auto* readPointer = buffer.getReadPointer(channel);
+	//	const float* input = buffer.getReadPointer(channel);
+	//	float* output = buffer.getWritePointer(channel);
 
-	//	for (auto sample = 0; sample > buffer.getNumSamples(); ++sample)
+	//	for (auto sample = 0; sample < numSamples; ++sample)
 	//	{
-	//		writePointer[sample] = myFilter.applyFilter(readPointer[sample], channel);
+	//		output[sample] = myFilter.process(input[sample], channel);
 	//	}
 	//}
 }
@@ -188,12 +192,21 @@ void FilterAudioProcessor::updateFilter()
 {
 	// Centre frequency 
 	float fc = *mParameters.getRawParameterValue("fc");
+
+	// LFO
+	//float A = fc * (1.059463 - 1);
+	//fc = fc + A * sin(2 * M_PI * mFreqLFO * mTLFO);
+	//if (fc < 20)
+	//	fc = 20;
+	//if (fc > 20000)
+	//	fc = 20000;
+		
 	// Resonance
 	float res = *mParameters.getRawParameterValue("res");
 	// Sampling frequency
 	float fs = mParameters.state[IDs::fs];
 	// Filter type
-	float filterType = *mParameters.getRawParameterValue("selectFilter");
+	float filterType = *mParameters.getRawParameterValue("filterType");
 
 	// Set filter fs, fc and res
 	mStateVariableFilter.state->setCutOffFrequency(fs, fc, res);

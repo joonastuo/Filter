@@ -52,7 +52,8 @@ void MagView::paint (Graphics& g)
 	bool startFound = false;
 
 	// Paint markers
-	paintMarkers(g, scaleX, minX, fs);
+	if (getHeight() > 100.f)
+		paintMarkers(g, scaleX, minX, fs);
     
 	// Path of the frequency response
 	Path myPath;
@@ -151,7 +152,7 @@ void MagView::updateFilter()
 	float fc = *mParameters.getRawParameterValue("fc");
 	float res = *mParameters.getRawParameterValue("res");
 	float fs = mParameters.state[IDs::fs];
-	float filterType = *mParameters.getRawParameterValue("selectFilter");
+	float filterType = *mParameters.getRawParameterValue("filterType");
 
 	// Set filter fs, fc and res
 	mStateVariableFilter.parameters->setCutOffFrequency(fs, fc, res);
@@ -180,7 +181,7 @@ void MagView::timerCallback()
 	// Repaint filter magnitude response if filter parameters have changed.
 	float fc = *mParameters.getRawParameterValue("fc");
 	float res = *mParameters.getRawParameterValue("res");
-	float selectFilter = *mParameters.getRawParameterValue("selectFilter");
+	float selectFilter = *mParameters.getRawParameterValue("filterType");
 	
 	if (fc != mOldFc || res != mOldRes || selectFilter != mOldSelect)
 	{
