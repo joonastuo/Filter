@@ -44,11 +44,11 @@ void FilterAudioProcessor::initialiseParameters()
 	// Range of filter type selection (0=LP, 1=HP, 2=BP)
 	NormalisableRange<float> selectRange(FilterType::lowpass, FilterType::bandpass);
 	// Add centre frequency to ValueTree
-	mParameters.createAndAddParameter(IDs::filterFrequency, "Freq", String(), fcRange, 1000.f, nullptr, nullptr);
+	mParameters.createAndAddParameter(IDs::filterFrequency, NAMEs::Freq, String(), fcRange, 1000.f, nullptr, nullptr);
 	// Add resonance to ValueTree
-	mParameters.createAndAddParameter(IDs::res, "Res", String(), resRange, 1.f, nullptr, nullptr);
+	mParameters.createAndAddParameter(IDs::resonance, NAMEs::Res, String(), resRange, 1.f, nullptr, nullptr);
 	// Add filter type selection to ValueTree
-	mParameters.createAndAddParameter(IDs::filterType, "FilterType" , String(), selectRange, FilterType::lowpass, nullptr, nullptr);
+	mParameters.createAndAddParameter(IDs::filterType, NAMEs::Type , String(), selectRange, FilterType::lowpass, nullptr, nullptr);
 	// Initialise ValueTree
 	mParameters.state = ValueTree("FilterParameters");
 	// Set sampling frequency as a value tree parameter
@@ -174,7 +174,7 @@ void FilterAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer&
 void FilterAudioProcessor::updateFilter()
 {
 	const float fc =	   *mParameters.getRawParameterValue(IDs::filterFrequency);
-	const float res =	   *mParameters.getRawParameterValue(IDs::res);
+	const float res =	   *mParameters.getRawParameterValue(IDs::resonance);
 	const int filterType = *mParameters.getRawParameterValue(IDs::filterType);
 	const float fs =		mParameters.state[IDs::fs];
 

@@ -42,7 +42,7 @@ void FilterAudioProcessorEditor::initialiseGUI()
 	
 	// FILTER FREQUENCY ========================
 	// Label
-	mFreqLabel.setText("Freq", dontSendNotification);
+	mFreqLabel.setText(NAMEs::Freq, dontSendNotification);
 	mFreqLabel.setJustificationType(Justification::centred);
 	mFreqLabel.setFont(mLabelFontSize);
 	addAndMakeVisible(mFreqLabel);
@@ -58,7 +58,7 @@ void FilterAudioProcessorEditor::initialiseGUI()
 
 	// FILTER RESONANCE ========================
 	// Label
-	mResLabel.setText("Res", dontSendNotification);
+	mResLabel.setText(NAMEs::Res, dontSendNotification);
 	mResLabel.setJustificationType(Justification::centred);
 	mResLabel.setFont(mLabelFontSize);
 	addAndMakeVisible(mResLabel);
@@ -68,11 +68,11 @@ void FilterAudioProcessorEditor::initialiseGUI()
 	mResSlider.setTextBoxStyle(Slider::TextEntryBoxPosition::NoTextBox, true, 1.f, 1.f);
 	mResSlider.setLookAndFeel(&knobLookAndFeel);
 	addAndMakeVisible(mResSlider);
-	mResAttachment.reset(new SliderAttachment(mParameters, IDs::res, mResSlider));
+	mResAttachment.reset(new SliderAttachment(mParameters, IDs::resonance, mResSlider));
 
 	// FILTER TYPE =============================
 	// Label
-	mFilterTypeLabel.setText("Type",dontSendNotification);
+	mFilterTypeLabel.setText(NAMEs::Type,dontSendNotification);
 	mFilterTypeLabel.setJustificationType(Justification::centred);
 	mFilterTypeLabel.setFont(mLabelFontSize);
 	addAndMakeVisible(mFilterTypeLabel);

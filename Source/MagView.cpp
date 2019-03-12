@@ -147,7 +147,7 @@ void MagView::updateFilter()
 {
 	// Filter parameters from plugin ValueTree
 	const float fc =	   *mParameters.getRawParameterValue(IDs::filterFrequency);
-	const float res =	   *mParameters.getRawParameterValue(IDs::res);
+	const float res =	   *mParameters.getRawParameterValue(IDs::resonance);
 	const int filterType = *mParameters.getRawParameterValue(IDs::filterType);
 	const float fs =		mParameters.state[IDs::fs];
 
@@ -169,7 +169,7 @@ void MagView::timerCallback()
 {
 	// Repaint filter magnitude response if filter parameters have changed.
 	float fc =			 *mParameters.getRawParameterValue(IDs::filterFrequency);
-	float res =			 *mParameters.getRawParameterValue(IDs::res);
+	float res =			 *mParameters.getRawParameterValue(IDs::resonance);
 	float selectFilter = *mParameters.getRawParameterValue(IDs::filterType);
 	
 	// Check if values have changed
