@@ -22,14 +22,20 @@ FilterAudioProcessor::FilterAudioProcessor()
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
                      #endif
                        ),
-	mParameters(*this, nullptr),
-	myFilter(mParameters)
+	   mParameters(*this, nullptr)
 #endif
 {
-	initialiseValueTree();
+	initialiseParameters();
 }
 
-void FilterAudioProcessor::initialiseValueTree()
+
+FilterAudioProcessor::~FilterAudioProcessor()
+{
+	// Empty destructor
+}
+
+//==============================================================================
+void FilterAudioProcessor::initialiseParameters()
 {
 	// Range of filter centre frequency (20 - 20 000 Hz)
 	NormalisableRange<float> fcRange(20.f, 20000.f);
@@ -49,11 +55,6 @@ void FilterAudioProcessor::initialiseValueTree()
 	// so it can be accessed trought mParameters.state
 	mParameters.state.setProperty(IDs::fs, 44100.f, nullptr);
 }
-
-FilterAudioProcessor::~FilterAudioProcessor()
-{
-}
-
 //==============================================================================
 const String FilterAudioProcessor::getName() const
 {
@@ -165,27 +166,12 @@ bool FilterAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) c
 void FilterAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
 	float fs = mParameters.state[IDs::fs];
-	mTLFO = mTLFO + buffer.getNumSamples() * (1.f / fs);
 	// Buffer into an audio block
 	dsp::AudioBlock<float> block(buffer);
 	// Update filter
 	updateFilter();
 	// Apply current design of StateVariableFilter to input buffer
 	mStateVariableFilter.process(dsp::ProcessContextReplacing <float>(block));
-
-	// Apply own filter
-	//float numSamples = buffer.getNumSamples();
-	//
-	//for (auto channel = 0; channel < getTotalNumInputChannels(); ++channel)
-	//{
-	//	const float* input = buffer.getReadPointer(channel);
-	//	float* output = buffer.getWritePointer(channel);
-
-	//	for (auto sample = 0; sample < numSamples; ++sample)
-	//	{
-	//		output[sample] = myFilter.process(input[sample], channel);
-	//	}
-	//}
 }
 
 void FilterAudioProcessor::updateFilter()
@@ -193,14 +179,6 @@ void FilterAudioProcessor::updateFilter()
 	// Centre frequency 
 	float fc = *mParameters.getRawParameterValue("fc");
 
-	// LFO
-	//float A = fc * (1.059463 - 1);
-	//fc = fc + A * sin(2 * M_PI * mFreqLFO * mTLFO);
-	//if (fc < 20)
-	//	fc = 20;
-	//if (fc > 20000)
-	//	fc = 20000;
-		
 	// Resonance
 	float res = *mParameters.getRawParameterValue("res");
 	// Sampling frequency
