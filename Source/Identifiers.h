@@ -11,10 +11,25 @@
 #pragma once
 
 namespace IDs {
-
+	// JUCE Identifiers
 	#define DECLARE_ID(name) const juce::Identifier name (#name);
 
 	DECLARE_ID(fs)		// Sampling frequency
 
 	#undef DECLARE_ID
+
+	// JUCE Strings
+	#define DECLARE_ID(name) const juce::String name (#name);
+
+	DECLARE_ID(filterFrequency)
+	DECLARE_ID(res)
+	DECLARE_ID(filterType)
+
+	#undef DECLARE_STR
 }
+
+enum FilterType {
+	lowpass,
+	highpass,
+	bandpass
+};

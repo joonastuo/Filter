@@ -50,9 +50,6 @@ public:
 		else
 			g.setColour(Colours::white.darker(.8f));
 
-		// Outline of button
-		// g.strokePath(roundedButtonPath, PathStrokeType(1.f));
-
 		// Path to draw image of the filter
 		Path p;
 		p.startNewSubPath(0.f, height / 2.f);

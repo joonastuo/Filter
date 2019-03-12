@@ -65,6 +65,6 @@ public:
 			value = static_cast<String> (round(slider.getValue() / 10.f) / 100.f) + "k";
 		else
 			value = static_cast<String> (round(slider.getValue() * 100.f) / 100.f);
-		g.drawFittedText(value + (slider.getValue() > 10 ? " Hz" : ""), centreX - 30.f, height - 10.f, 60.f, 10.f, Justification::centred, 1);
+		g.drawFittedText(value + slider.getTextValueSuffix(), centreX - 30.f, height - 10.f, 60.f, 10.f, Justification::centred, 1);
 	}
 };

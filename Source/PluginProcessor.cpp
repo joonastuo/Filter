@@ -42,13 +42,13 @@ void FilterAudioProcessor::initialiseParameters()
 	// Range of filter resonance
 	NormalisableRange<float> resRange(0.5f, 5.f);
 	// Range of filter type selection (0=LP, 1=HP, 2=BP)
-	NormalisableRange<float> selectRange(0, 2);
+	NormalisableRange<float> selectRange(FilterType::lowpass, FilterType::bandpass);
 	// Add centre frequency to ValueTree
-	mParameters.createAndAddParameter("fc", "Freq", String(), fcRange, 1000.f, nullptr, nullptr);
+	mParameters.createAndAddParameter(IDs::filterFrequency, "Freq", String(), fcRange, 1000.f, nullptr, nullptr);
 	// Add resonance to ValueTree
-	mParameters.createAndAddParameter("res", "Res", String(), resRange, 1.f, nullptr, nullptr);
+	mParameters.createAndAddParameter(IDs::res, "Res", String(), resRange, 1.f, nullptr, nullptr);
 	// Add filter type selection to ValueTree
-	mParameters.createAndAddParameter("filterType", "FilterType" , String(), selectRange, 0, nullptr, nullptr);
+	mParameters.createAndAddParameter(IDs::filterType, "FilterType" , String(), selectRange, FilterType::lowpass, nullptr, nullptr);
 	// Initialise ValueTree
 	mParameters.state = ValueTree("FilterParameters");
 	// Set sampling frequency as a value tree parameter
@@ -166,43 +166,26 @@ bool FilterAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) c
 void FilterAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
 	float fs = mParameters.state[IDs::fs];
-	// Buffer into an audio block
 	dsp::AudioBlock<float> block(buffer);
-	// Update filter
 	updateFilter();
-	// Apply current design of StateVariableFilter to input buffer
 	mStateVariableFilter.process(dsp::ProcessContextReplacing <float>(block));
 }
 
 void FilterAudioProcessor::updateFilter()
 {
-	// Centre frequency 
-	float fc = *mParameters.getRawParameterValue("fc");
+	const float fc =	   *mParameters.getRawParameterValue(IDs::filterFrequency);
+	const float res =	   *mParameters.getRawParameterValue(IDs::res);
+	const int filterType = *mParameters.getRawParameterValue(IDs::filterType);
+	const float fs =		mParameters.state[IDs::fs];
 
-	// Resonance
-	float res = *mParameters.getRawParameterValue("res");
-	// Sampling frequency
-	float fs = mParameters.state[IDs::fs];
-	// Filter type
-	float filterType = *mParameters.getRawParameterValue("filterType");
-
-	// Set filter fs, fc and res
 	mStateVariableFilter.state->setCutOffFrequency(fs, fc, res);
 
-	// Low pass filter
-	if (filterType == 0)
+	switch (filterType)
 	{
-		mStateVariableFilter.state->type = dsp::StateVariableFilter::Parameters<float>::Type::lowPass;
-	}
-	// High pass filter
-	else if (filterType == 1)
-	{
-		mStateVariableFilter.state->type = dsp::StateVariableFilter::Parameters<float>::Type::highPass;
-	}
-	// Band pass filter
-	else if (filterType == 2)
-	{
-		mStateVariableFilter.state->type = dsp::StateVariableFilter::Parameters<float>::Type::bandPass;
+	case lowpass:  mStateVariableFilter.state->type = dsp::StateVariableFilter::Parameters<float>::Type::lowPass;  break;
+	case highpass: mStateVariableFilter.state->type = dsp::StateVariableFilter::Parameters<float>::Type::highPass; break;
+	case bandpass: mStateVariableFilter.state->type = dsp::StateVariableFilter::Parameters<float>::Type::bandPass; break;
+	default: break;
 	}
 }
 

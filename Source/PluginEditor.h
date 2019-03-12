@@ -52,14 +52,14 @@ private:
 	// GUI elements
 
 	// Labels
-	Label mFcLabel;
+	Label mFreqLabel;
 	Label mResLabel;
-	Label mSelectLabel;
+	Label mFilterTypeLabel;
 
 	float mLabelFontSize = 18.f;
 
 	// Sliders
-	Slider mFcSlider;
+	Slider mFreqSlider;
 	Slider mResSlider;
 
 	// Buttons
@@ -70,7 +70,7 @@ private:
 	typedef AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
 	
 	// Attachments so that ValueTree parameters update with slier value change
-	std::unique_ptr<SliderAttachment> mFcAttachment;
+	std::unique_ptr<SliderAttachment> mFreqAttachment;
 	std::unique_ptr<SliderAttachment> mResAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterAudioProcessorEditor)

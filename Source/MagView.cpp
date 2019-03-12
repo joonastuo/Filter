@@ -14,15 +14,12 @@
 //==============================================================================
 MagView::MagView(AudioProcessorValueTreeState& vt) : mParameters(vt), mFFT(fftOrder)
 {
-	// Mag view size
-	//setSize(getHeight() / 1.8f, getWidth());
-	// Start update timer
 	startTimer(10.f);
 }
 
 MagView::~MagView()
 {
-
+	// Empty destructor
 }
 
 //==============================================================================
@@ -51,7 +48,7 @@ void MagView::paint (Graphics& g)
 	float endY = 0.f;
 	bool startFound = false;
 
-	// Paint markers
+	// Paint markers if the graph is large enough
 	if (getHeight() > 100.f)
 		paintMarkers(g, scaleX, minX, fs);
     
@@ -149,28 +146,20 @@ void MagView::resized()
 void MagView::updateFilter()
 {
 	// Filter parameters from plugin ValueTree
-	float fc = *mParameters.getRawParameterValue("fc");
-	float res = *mParameters.getRawParameterValue("res");
-	float fs = mParameters.state[IDs::fs];
-	float filterType = *mParameters.getRawParameterValue("filterType");
+	const float fc =	   *mParameters.getRawParameterValue(IDs::filterFrequency);
+	const float res =	   *mParameters.getRawParameterValue(IDs::res);
+	const int filterType = *mParameters.getRawParameterValue(IDs::filterType);
+	const float fs =		mParameters.state[IDs::fs];
 
-	// Set filter fs, fc and res
 	mStateVariableFilter.parameters->setCutOffFrequency(fs, fc, res);
 
-	// Low pass filter
-	if (filterType == 0)
+	switch (filterType)
 	{
-		mStateVariableFilter.parameters->type = dsp::StateVariableFilter::Parameters<float>::Type::lowPass;
-	}
-	// High pass filter
-	else if (filterType == 1)
-	{
-		mStateVariableFilter.parameters->type = dsp::StateVariableFilter::Parameters<float>::Type::highPass;
-	}
-	// Band pass filter
-	else if (filterType == 2)
-	{
-		mStateVariableFilter.parameters->type = dsp::StateVariableFilter::Parameters<float>::Type::bandPass;
+	case lowpass:  mStateVariableFilter.parameters->type = dsp::StateVariableFilter::Parameters<float>::Type::lowPass;  break;
+	case highpass: mStateVariableFilter.parameters->type = dsp::StateVariableFilter::Parameters<float>::Type::highPass; break;
+	case bandpass: mStateVariableFilter.parameters->type = dsp::StateVariableFilter::Parameters<float>::Type::bandPass; break;
+	default:
+		break;
 	}
 }
 
@@ -179,18 +168,20 @@ void MagView::updateFilter()
 void MagView::timerCallback()
 {
 	// Repaint filter magnitude response if filter parameters have changed.
-	float fc = *mParameters.getRawParameterValue("fc");
-	float res = *mParameters.getRawParameterValue("res");
-	float selectFilter = *mParameters.getRawParameterValue("filterType");
+	float fc =			 *mParameters.getRawParameterValue(IDs::filterFrequency);
+	float res =			 *mParameters.getRawParameterValue(IDs::res);
+	float selectFilter = *mParameters.getRawParameterValue(IDs::filterType);
 	
+	// Check if values have changed
 	if (fc != mOldFc || res != mOldRes || selectFilter != mOldSelect)
 	{
 		updateFilter();
 		calcMagResponse();
 		repaint();
 	}
-	mOldFc = fc;
-	mOldRes = res;
+	// Current values as old values
+	mOldFc	   = fc;
+	mOldRes	   = res;
 	mOldSelect = selectFilter;
 }
 

@@ -29,8 +29,87 @@ FilterAudioProcessorEditor::FilterAudioProcessorEditor (FilterAudioProcessor& p)
     setSize (566.f, 372.f);
 }
 
-FilterAudioProcessorEditor::~FilterAudioProcessorEditor() {}
+FilterAudioProcessorEditor::~FilterAudioProcessorEditor() 
+{
+	// Empty destructor
+}
 
+//==============================================================================
+void FilterAudioProcessorEditor::initialiseGUI()
+{
+	// MAGNITUDE VIEW ==========================		
+	addAndMakeVisible(mMagView);
+	
+	// FILTER FREQUENCY ========================
+	// Label
+	mFreqLabel.setText("Freq", dontSendNotification);
+	mFreqLabel.setJustificationType(Justification::centred);
+	mFreqLabel.setFont(mLabelFontSize);
+	addAndMakeVisible(mFreqLabel);
+
+	//Slider
+	mFreqSlider.setSliderStyle(Slider::SliderStyle::Rotary);
+	mFreqSlider.setTextBoxStyle(Slider::TextEntryBoxPosition::NoTextBox, true, 1.f, 1.f);
+	mFreqSlider.setTextValueSuffix(" Hz");
+	mFreqSlider.setLookAndFeel(&knobLookAndFeel);
+	addAndMakeVisible(mFreqSlider);
+	mFreqAttachment.reset(new SliderAttachment(mParameters, IDs::filterFrequency, mFreqSlider));
+	mFreqSlider.setSkewFactorFromMidPoint(1000.0);
+
+	// FILTER RESONANCE ========================
+	// Label
+	mResLabel.setText("Res", dontSendNotification);
+	mResLabel.setJustificationType(Justification::centred);
+	mResLabel.setFont(mLabelFontSize);
+	addAndMakeVisible(mResLabel);
+
+	//Slider
+	mResSlider.setSliderStyle(Slider::SliderStyle::Rotary);
+	mResSlider.setTextBoxStyle(Slider::TextEntryBoxPosition::NoTextBox, true, 1.f, 1.f);
+	mResSlider.setLookAndFeel(&knobLookAndFeel);
+	addAndMakeVisible(mResSlider);
+	mResAttachment.reset(new SliderAttachment(mParameters, IDs::res, mResSlider));
+
+	// FILTER TYPE =============================
+	// Label
+	mFilterTypeLabel.setText("Type",dontSendNotification);
+	mFilterTypeLabel.setJustificationType(Justification::centred);
+	mFilterTypeLabel.setFont(mLabelFontSize);
+	addAndMakeVisible(mFilterTypeLabel);
+
+	// Buttons
+	float buttonWidth  = 20.f;
+	float buttonHeight = 15.f;
+	// LP
+	mLPButton.setSize(buttonWidth, buttonHeight);
+	mLPButton.setLookAndFeel(&mLPButtonLookAndFeel);
+	mLPButton.addListener(this);
+	mLPButton.setClickingTogglesState(true);
+	addAndMakeVisible(mLPButton);
+	// HP
+	mHPButton.setSize(buttonWidth, buttonHeight);
+	mHPButton.setLookAndFeel(&mHPButtonLookAndFeel);
+	mHPButton.addListener(this);
+	mHPButton.setClickingTogglesState(true);
+	addAndMakeVisible(mHPButton);
+	// BP
+	mBPButton.setSize(buttonWidth, buttonHeight);
+	mBPButton.setLookAndFeel(&mBPButtonLookAndFeel);
+	mBPButton.addListener(this);
+	mBPButton.setClickingTogglesState(true);
+	addAndMakeVisible(mBPButton);
+
+	// Initial filter type
+	int filterType = *mParameters.getRawParameterValue(IDs::filterType);
+	switch (filterType)
+	{
+	case lowpass:  mLPButton.setToggleState(true, true); break;
+	case highpass: mHPButton.setToggleState(true, true); break;
+	case bandpass: mBPButton.setToggleState(true, true); break;
+	default:
+		break;
+	}
+}
 //==============================================================================
 void FilterAudioProcessorEditor::paint (Graphics& g) 
 {
@@ -38,6 +117,7 @@ void FilterAudioProcessorEditor::paint (Graphics& g)
 	g.fillAll(getLookAndFeel().findColour(ResizableWindow::backgroundColourId)); 
 }
 
+//==============================================================================
 void FilterAudioProcessorEditor::resized()
 {
 	// GUI parameters===============================================
@@ -84,8 +164,8 @@ void FilterAudioProcessorEditor::resized()
 	fcBox.justifyContent = FlexBox::JustifyContent::center;
 	fcBox.alignContent   = FlexBox::AlignContent::center;
 	fcBox.flexDirection  = FlexBox::Direction::column;
-	fcBox.items.addArray({ FlexItem(mFcLabel).withWidth(knobWidth).withHeight(labelHeight),
-						   FlexItem(mFcSlider).withWidth(knobWidth).withHeight(knobHeight) });
+	fcBox.items.addArray({ FlexItem(mFreqLabel).withWidth(knobWidth).withHeight(labelHeight),
+						   FlexItem(mFreqSlider).withWidth(knobWidth).withHeight(knobHeight) });
 	// Resonance knob
 	FlexBox resBox;
 	resBox.justifyContent = FlexBox::JustifyContent::center;
@@ -181,71 +261,14 @@ void FilterAudioProcessorEditor::resized()
 	masterBox.performLayout(area.toFloat());
 }
 
-void FilterAudioProcessorEditor::initialiseGUI()
-{
-	// Set up sliders
-	mFcSlider.setSliderStyle(Slider::SliderStyle::Rotary);
-	mResSlider.setSliderStyle(Slider::SliderStyle::Rotary);
-	mFcSlider.setTextBoxStyle(Slider::TextEntryBoxPosition::NoTextBox, true, 1.f, 1.f);
-	mResSlider.setTextBoxStyle(Slider::TextEntryBoxPosition::NoTextBox, true, 1.f, 1.f);
-	addAndMakeVisible(mFcSlider);
-	addAndMakeVisible(mResSlider);
-	mFcSlider.setLookAndFeel(&knobLookAndFeel);
-	mResSlider.setLookAndFeel(&knobLookAndFeel);
-	// Slider attachments
-	mFcAttachment.reset(new SliderAttachment(mParameters, "fc", mFcSlider));
-	mResAttachment.reset(new SliderAttachment(mParameters, "res", mResSlider));
-	// fc slider into log10 scale
-	mFcSlider.setSkewFactorFromMidPoint(1000.0);
-
-	// Set up Labels
-	mFcLabel.setText("Freq", dontSendNotification);
-	mResLabel.setText("Res", dontSendNotification);
-	mSelectLabel.setText("Type",dontSendNotification);
-	mFcLabel.setJustificationType(Justification::centred);
-	mResLabel.setJustificationType(Justification::centred);
-	mSelectLabel.setJustificationType(Justification::centred);
-	mFcLabel.setFont(mLabelFontSize);
-	mResLabel.setFont(mLabelFontSize);
-	mSelectLabel.setFont(mLabelFontSize);
-	addAndMakeVisible(mResLabel);
-	addAndMakeVisible(mFcLabel);
-	addAndMakeVisible(mSelectLabel);
-	addAndMakeVisible(mMagView);
-	// Set up buttons
-	float buttonWidth = 20.f;
-	float buttonHeight = 15.f;
-	mLPButton.setSize(buttonWidth, buttonHeight);
-	mLPButton.setLookAndFeel(&mLPButtonLookAndFeel);
-	addAndMakeVisible(mLPButton);
-	mHPButton.setSize(buttonWidth, buttonHeight);
-	mHPButton.setLookAndFeel(&mHPButtonLookAndFeel);
-	addAndMakeVisible(mHPButton);
-	mBPButton.setSize(buttonWidth, buttonHeight);
-	mBPButton.setLookAndFeel(&mBPButtonLookAndFeel);
-	addAndMakeVisible(mBPButton);
-	mLPButton.addListener(this);
-	mHPButton.addListener(this);
-	mBPButton.addListener(this);
-	mLPButton.setClickingTogglesState(true);
-	mHPButton.setClickingTogglesState(true);
-	mBPButton.setClickingTogglesState(true);
-	int filterType = *mParameters.getRawParameterValue("filterType");
-	if (filterType == 0)
-		mLPButton.setToggleState(true, true);
-	else if (filterType == 1)
-		mHPButton.setToggleState(true, true);
-	else
-		mBPButton.setToggleState(true, true);
-}
-
+//==============================================================================
 void FilterAudioProcessorEditor::buttonClicked(Button* b)
 {
-	Value filterType = mParameters.getParameterAsValue("filterType");
+	Value filterType = mParameters.getParameterAsValue(IDs::filterType);
 	// Lowpass button
 	if (b == &mLPButton)
 	{
-		filterType = 0;
+		filterType = FilterType::lowpass;
 		if (mLPButton.getToggleState())
 		{
 			if (mHPButton.getToggleState())
@@ -259,10 +282,14 @@ void FilterAudioProcessorEditor::buttonClicked(Button* b)
 				mLPButton.setToggleState(true, false);
 			}
 		}
+		else
+		{
+			mLPButton.setToggleState(true, false);
+		}
 	}
 	if (b == &mHPButton)
 	{
-		filterType = 1;
+		filterType = FilterType::highpass;
 		if (mHPButton.getToggleState())
 		{
 			if (mLPButton.getToggleState())
@@ -276,10 +303,14 @@ void FilterAudioProcessorEditor::buttonClicked(Button* b)
 				mHPButton.setToggleState(true, false);
 			}
 		}
+		else
+		{
+			mHPButton.setToggleState(true, false);
+		}
 	}
 	if (b == &mBPButton)
 	{
-		filterType = 2;
+		filterType = FilterType::bandpass;
 		if (mBPButton.getToggleState())
 		{
 			if (mLPButton.getToggleState())
@@ -292,6 +323,10 @@ void FilterAudioProcessorEditor::buttonClicked(Button* b)
 				mHPButton.setToggleState(false, false);
 				mBPButton.setToggleState(true, false);
 			}
+		}
+		else
+		{
+			mBPButton.setToggleState(true, false);
 		}
 	}
 }
