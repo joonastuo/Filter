@@ -21,17 +21,15 @@ class MyFilter
 public:
     MyFilter(AudioProcessorValueTreeState&);
     ~MyFilter();
-	float applyFilter(float sample);
-	float firstOrderLowPass(float sample);
+	//  Process sample
+	float process(float sample, int channel);
+	// Filters
+	float lowPass(float sample, int channel);
+	float highPass(float sample, int channel);
+	float bandPass(float sample, int channel);
 
 private:
 	AudioProcessorValueTreeState& mParameters;
-
-	//CachedValue<float> mFc;
-	//CachedValue<float> mGain;
-	//CachedValue<float> mFs;
-
-	float mPrevXh = 0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MyFilter)
 };
