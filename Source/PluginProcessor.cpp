@@ -22,23 +22,53 @@ FilterAudioProcessor::FilterAudioProcessor()
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
                      #endif
                        ),
-	mParameters(*this, nullptr)
+	   mState(*this, nullptr, Identifier("StateVariableFiler"), 
+		   {
+				std::make_unique<AudioParameterFloat>(IDs::filterFrequency,
+													  NAMEs::Freq,
+													  NormalisableRange<float>(20.f, 20000.f, .01f, 0.2299),
+													  1000.f,
+													  String(),
+													  AudioProcessorParameter::genericParameter,
+													  [](float value, int maxStringLength) {return static_cast<String>(round(value * 100.f) / 100.f); },
+													  [](const String& text) {return text.getFloatValue(); }
+													   ),
+				std::make_unique<AudioParameterFloat>(IDs::resonance,
+													  NAMEs::Res,
+													  NormalisableRange<float>(0.5f, 5.f),
+													  0.707f,
+													  String(),
+													  AudioProcessorParameter::genericParameter,
+													  [](float value, int maxStringLength) {return static_cast<String>(round(value * 100.f) / 100.f); },
+													  [](const String& text) {return text.getFloatValue(); }
+													   ),
+				std::make_unique<AudioParameterFloat>(IDs::filterType,
+													  NAMEs::Type,
+													  NormalisableRange<float> (FilterType::lowpass, FilterType::bandpass),
+													  FilterType::lowpass,
+													  String(),
+													  AudioProcessorParameter::genericParameter,
+													  nullptr,
+												      nullptr
+													   )
+		   }),
+	   mStateVariableFilter(mState)
 #endif
 {
-	NormalisableRange<float> fcRange(20.f, 20000.f);
-	NormalisableRange<float> gainRange(1.f, 5.f);
-	NormalisableRange<float> selectRange(0, 2);
-	mParameters.createAndAddParameter("fc", "fc", String(), fcRange, 1000.f, nullptr, nullptr);
-	mParameters.createAndAddParameter("res", "Res", String(), gainRange, 1.f, nullptr, nullptr);
-	mParameters.createAndAddParameter("selectFilter", "SelectFilter" , String(), selectRange, 0, nullptr, nullptr);
-	mParameters.state = ValueTree("FilterParameters");
-	mParameters.state.setProperty(IDs::fs, 44100.f, nullptr);
+	initialiseParameters();
 }
+
 
 FilterAudioProcessor::~FilterAudioProcessor()
 {
+	// Empty destructor
 }
 
+//==============================================================================
+void FilterAudioProcessor::initialiseParameters()
+{
+	mState.state.setProperty(IDs::fs, 44100.f, nullptr);
+}
 //==============================================================================
 const String FilterAudioProcessor::getName() const
 {
@@ -104,13 +134,12 @@ void FilterAudioProcessor::changeProgramName (int index, const String& newName)
 //==============================================================================
 void FilterAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-	mParameters.state.setProperty(IDs::fs, sampleRate, nullptr);
+	mState.state.setProperty(IDs::fs, sampleRate, nullptr);
 	dsp::ProcessSpec spec;
 	spec.sampleRate = sampleRate;
 	spec.maximumBlockSize = samplesPerBlock;
 	spec.numChannels = getTotalNumOutputChannels();
 	mStateVariableFilter.prepare(spec);
-	mStateVariableFilter.reset();
 }
 
 void FilterAudioProcessor::releaseResources()
@@ -145,35 +174,14 @@ bool FilterAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) c
 
 void FilterAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-    ScopedNoDenormals noDenormals;
+	ScopedNoDenormals noDenormals;
+	auto totalNumInputChannels = getTotalNumInputChannels();
+	auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-	// Use JUCE filter
-	dsp::AudioBlock<float> block(buffer);
-	updateFilter();
-	mStateVariableFilter.process(dsp::ProcessContextReplacing <float>(block));
-}
+	for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+		buffer.clear(i, 0, buffer.getNumSamples());
 
-void FilterAudioProcessor::updateFilter()
-{
-	float fc = *mParameters.getRawParameterValue("fc");
-	float gain = *mParameters.getRawParameterValue("res");
-	float fs = mParameters.state[IDs::fs];
-	float selectFilter = *mParameters.getRawParameterValue("selectFilter");
-
-	mStateVariableFilter.state->setCutOffFrequency(fs, fc, gain);
-
-	if (selectFilter == 0)
-	{
-		mStateVariableFilter.state->type = dsp::StateVariableFilter::Parameters<float>::Type::lowPass;
-	}
-	else if (selectFilter == 1)
-	{
-		mStateVariableFilter.state->type = dsp::StateVariableFilter::Parameters<float>::Type::highPass;
-	}
-	else if (selectFilter == 2)
-	{
-		mStateVariableFilter.state->type = dsp::StateVariableFilter::Parameters<float>::Type::bandPass;
-	}
+	mStateVariableFilter.process(buffer);
 }
 
 //==============================================================================
@@ -190,7 +198,7 @@ AudioProcessorEditor* FilterAudioProcessor::createEditor()
 //==============================================================================
 void FilterAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
-	auto state = mParameters.copyState();
+	auto state = mState.copyState();
 	std::unique_ptr<XmlElement> xml(state.createXml());
 	copyXmlToBinary(*xml, destData);
 }
@@ -200,13 +208,15 @@ void FilterAudioProcessor::setStateInformation (const void* data, int sizeInByte
 	std::unique_ptr<XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
 
 	if (xmlState.get() != nullptr)
-		if (xmlState->hasTagName(mParameters.state.getType()))
-			mParameters.replaceState(ValueTree::fromXml(*xmlState));
+		if (xmlState->hasTagName(mState.state.getType()))
+			mState.replaceState(ValueTree::fromXml(*xmlState));
 }
 
+//==============================================================================
+// Return a reference of filter parameters
 AudioProcessorValueTreeState & FilterAudioProcessor::getState()
 {
-	return mParameters;
+	return mState;
 }
 
 

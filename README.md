@@ -1,14 +1,21 @@
 Filter
 ======
 
-Filter plugin made with JUCE.
+Filter plugin made with JUCE. A screenshot of the plugin can be seen below.
 
+<p align="center">
+	<img src="Images/filter.png" width="250">
+</p>
+			
 ## Current features
-- Filter type: LP, HP, BP
+* Controllable parameters:
+	- Frequency: Center frequency of the filter
+	- Resonance
+	- Filter type: LP, HP, BP
 - FIlter design: JUCE StateVariableFilter
-- Parameters: Center frequency, resonance
+- Graph of magnitude response
+- Resizable
 
 ## Future features
-- Graph of magnitude response
-- Better filter design
-- Improved UI
+- Implement state variable filter in filter-class
+- LFO

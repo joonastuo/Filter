@@ -13,11 +13,16 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
 #include "Identifiers.h"
+#include "KnobLookAndFeel.h"
+#include "MagView.h"
+#include "LPButtonLookAndFeel.h"
+#include "HPButtonLookAndFeel.h"
+#include "BPButtonLookAndFeel.h"
 
 //==============================================================================
 /**
 */
-class FilterAudioProcessorEditor  : public AudioProcessorEditor
+class FilterAudioProcessorEditor  : public AudioProcessorEditor, TextButton::Listener
 {
 public:
     FilterAudioProcessorEditor (FilterAudioProcessor&);
@@ -25,29 +30,48 @@ public:
 
     //==============================================================================
     void paint (Graphics&) override;
-	void paintMarkers(Graphics&, float xCenter, float yCenter, float r);
     void resized() override;
 	void initialiseGUI();
+	void buttonClicked(Button* b) override;
 private:
+	// Reference to plugin processor
     FilterAudioProcessor& processor;
+	// Reference to ValueTree
 	AudioProcessorValueTreeState& mParameters;
+	// Component class that paints Magnitude response of filter
+	MagView mMagView;
+	// How much wider the magView window is
+	float mMagViewRatio = 2.5f;
+
+	// LookAndFeel-classes to customize slider and button look
+	KnobLookAndFeel knobLookAndFeel;
+	LPButtonLookAndFeel mLPButtonLookAndFeel;
+	HPButtonLookAndFeel mHPButtonLookAndFeel;
+	BPButtonLookAndFeel mBPButtonLookAndFeel;
 
 	// GUI elements
-	Label mFcLabel;
-	Label mResLabel;
-	Label mSelectLabel;
 
-	Slider mFcSlider;
+	// Labels
+	Label mFreqLabel;
+	Label mResLabel;
+	Label mFilterTypeLabel;
+
+	float mLabelFontSize = 18.f;
+
+	// Sliders
+	Slider mFreqSlider;
 	Slider mResSlider;
 
-	ComboBox mSelectFilter;
-	// Attachments
+	// Buttons
+	TextButton mLPButton;
+	TextButton mHPButton;
+	TextButton mBPButton;
+
 	typedef AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
-	typedef AudioProcessorValueTreeState::ComboBoxAttachment ComboBoxAttachment;
 	
-	std::unique_ptr<SliderAttachment> mFcAttachment;
+	// Attachments so that ValueTree parameters update with slier value change
+	std::unique_ptr<SliderAttachment> mFreqAttachment;
 	std::unique_ptr<SliderAttachment> mResAttachment;
-	std::unique_ptr<ComboBoxAttachment> mSelectAttachment;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterAudioProcessorEditor)
 };

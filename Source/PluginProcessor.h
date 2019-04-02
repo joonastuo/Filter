@@ -12,6 +12,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Identifiers.h"
+#include "AudioDSP/StateVariableFilterWrapper.h"
 
 //==============================================================================
 /**
@@ -55,15 +56,16 @@ public:
     //==============================================================================
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+
+    //==============================================================================
+	void initialiseParameters();
 	AudioProcessorValueTreeState& getState();
-	void updateFilter();
 
 private:
-	AudioProcessorValueTreeState mParameters;
-	float mSliderWidth = 50;
-	float mSliderHeight = 100;
-	dsp::ProcessorDuplicator<dsp::StateVariableFilter::Filter<float>, 
-							 dsp::StateVariableFilter::Parameters <float>> mStateVariableFilter;
+	// ValueTree for storing plugin parameters
+	AudioProcessorValueTreeState mState;
+	// Filter
+	StateViableFilterWrapper mStateVariableFilter;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (FilterAudioProcessor)
