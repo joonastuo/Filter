@@ -14,6 +14,7 @@
 //==============================================================================
 MagView::MagView(AudioProcessorValueTreeState& vt) : mParameters(vt), mFFT(fftOrder)
 {
+	// Timer to update filter magnitude response graph
 	startTimer(10.f);
 }
 
@@ -37,10 +38,10 @@ void MagView::paint (Graphics& g)
 	float fftLen = fftSize / 2.f;
 	// Sampling frequency
     float fs = mParameters.state[IDs::fs];
-	// Start point in x-axis (20 Hz)
-    float minX  = log10(20.f * pow(2.f, fftOrder) / fs);
-	// Scale x-axis so that start is at 20 Hz and end at fs / 2
-	float scaleX = getWidth() / (log10(fftLen) - minX) ;
+	// Start point in x-axis (20 Hz to bins and then to log scale)
+    float minX  = log10(20.f * (static_cast<float>(fftSize) / fs));
+	// Scale x-axis so that start is at 20 Hz and end at 20 000 Hz
+	float scaleX = getWidth() / (log10(20000.f * (static_cast<float>(fftSize) / fs)) - minX);
 	// Scale y-axis from -12 dB to 12 dB
 	float maxY = 12.f;
 	float scaleY = (getHeight() / 2.f) / maxY;
@@ -61,7 +62,7 @@ void MagView::paint (Graphics& g)
 	{
 		// X scaled for window size and log10 scale
 		endX = i == 0 ? 0.f : (log10(i) - minX) * scaleX;
-		endY = (getHeight() / 2.f - maxY * log10(mFilteredImpulse[i]) * scaleY) ;
+		endY = getHeight() / 2.f - Decibels::gainToDecibels(mFilteredImpulse[i]) * scaleY ;
 		
 		// Start of the path
 		if (startFound == false && (endY > 0.f && endY < getHeight() + 20.f))
@@ -110,7 +111,7 @@ void MagView::paintMarkers(Graphics& g, float scaleX, float minX, float fs)
     for (auto i = 0; i < 26; ++i)
     {
 		// X scaled for window size and log10 scale
-        float markX = (log10(((freq[i]) * pow(2.f, fftOrder)) / fs) - minX) * scaleX;
+        float markX = (log10(freq[i] * fftSize / fs) - minX) * scaleX;
 
 		// Draw solid lines to 100, 1000 and 10 000
         if (freq[i] == 100 || freq[i] == 1000 || freq[i] == 10000)
@@ -139,6 +140,7 @@ void MagView::paintMarkers(Graphics& g, float scaleX, float minX, float fs)
 
 void MagView::resized()
 {
+	// Empty resized method
 }
 
 //==============================================================================

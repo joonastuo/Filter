@@ -49,12 +49,12 @@ void FilterAudioProcessorEditor::initialiseGUI()
 
 	//Slider
 	mFreqSlider.setSliderStyle(Slider::SliderStyle::Rotary);
-	mFreqSlider.setTextBoxStyle(Slider::TextEntryBoxPosition::NoTextBox, true, 1.f, 1.f);
+	mFreqSlider.setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxBelow, false, 50.f, 14.f);
 	mFreqSlider.setTextValueSuffix(" Hz");
 	mFreqSlider.setLookAndFeel(&knobLookAndFeel);
 	addAndMakeVisible(mFreqSlider);
 	mFreqAttachment.reset(new SliderAttachment(mParameters, IDs::filterFrequency, mFreqSlider));
-	mFreqSlider.setSkewFactorFromMidPoint(1000.0);
+	mFreqSlider.setSkewFactorFromMidPoint(1000.f);
 
 	// FILTER RESONANCE ========================
 	// Label
@@ -65,7 +65,7 @@ void FilterAudioProcessorEditor::initialiseGUI()
 
 	//Slider
 	mResSlider.setSliderStyle(Slider::SliderStyle::Rotary);
-	mResSlider.setTextBoxStyle(Slider::TextEntryBoxPosition::NoTextBox, true, 1.f, 1.f);
+	mResSlider.setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxBelow, false, 50.f, 14.f);
 	mResSlider.setLookAndFeel(&knobLookAndFeel);
 	addAndMakeVisible(mResSlider);
 	mResAttachment.reset(new SliderAttachment(mParameters, IDs::resonance, mResSlider));

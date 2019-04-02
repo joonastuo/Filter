@@ -22,7 +22,36 @@ FilterAudioProcessor::FilterAudioProcessor()
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
                      #endif
                        ),
-	   mState(*this, nullptr),
+	   mState(*this, nullptr, Identifier("StateVariableFiler"), 
+		   {
+				std::make_unique<AudioParameterFloat>(IDs::filterFrequency,
+													  NAMEs::Freq,
+													  NormalisableRange<float>(20.f, 20000.f, .01f, 0.2299),
+													  1000.f,
+													  String(),
+													  AudioProcessorParameter::genericParameter,
+													  [](float value, int maxStringLength) {return static_cast<String>(round(value * 100.f) / 100.f); },
+													  [](const String& text) {return text.getFloatValue(); }
+													   ),
+				std::make_unique<AudioParameterFloat>(IDs::resonance,
+													  NAMEs::Res,
+													  NormalisableRange<float>(0.5f, 5.f),
+													  0.707f,
+													  String(),
+													  AudioProcessorParameter::genericParameter,
+													  [](float value, int maxStringLength) {return static_cast<String>(round(value * 100.f) / 100.f); },
+													  [](const String& text) {return text.getFloatValue(); }
+													   ),
+				std::make_unique<AudioParameterFloat>(IDs::filterType,
+													  NAMEs::Type,
+													  NormalisableRange<float> (FilterType::lowpass, FilterType::bandpass),
+													  FilterType::lowpass,
+													  String(),
+													  AudioProcessorParameter::genericParameter,
+													  nullptr,
+												      nullptr
+													   )
+		   }),
 	   mStateVariableFilter(mState)
 #endif
 {
@@ -38,22 +67,6 @@ FilterAudioProcessor::~FilterAudioProcessor()
 //==============================================================================
 void FilterAudioProcessor::initialiseParameters()
 {
-	// Range of filter centre frequency (20 - 20 000 Hz)
-	NormalisableRange<float> fcRange(20.f, 20000.f);
-	// Range of filter resonance
-	NormalisableRange<float> resRange(0.5f, 5.f);
-	// Range of filter type selection (0=LP, 1=HP, 2=BP)
-	NormalisableRange<float> selectRange(FilterType::lowpass, FilterType::bandpass);
-	// Add centre frequency to ValueTree
-	mState.createAndAddParameter(IDs::filterFrequency, NAMEs::Freq, String(), fcRange, 1000.f, nullptr, nullptr);
-	// Add resonance to ValueTree
-	mState.createAndAddParameter(IDs::resonance, NAMEs::Res, String(), resRange, 1.f, nullptr, nullptr);
-	// Add filter type selection to ValueTree
-	mState.createAndAddParameter(IDs::filterType, NAMEs::Type , String(), selectRange, FilterType::lowpass, nullptr, nullptr);
-	// Initialise ValueTree
-	mState.state = ValueTree("FilterParameters");
-	// Set sampling frequency as a value tree parameter
-	// so it can be accessed trought mParameters.state
 	mState.state.setProperty(IDs::fs, 44100.f, nullptr);
 }
 //==============================================================================

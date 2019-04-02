@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="as3rqd" name="Filter" projectType="audioplug" jucerVersion="5.4.3">
+<JUCERPROJECT id="as3rqd" name="Filter" projectType="audioplug" jucerVersion="5.4.3"
+              pluginFormats="buildAU,buildStandalone,buildVST,buildVST3">
   <MAINGROUP id="w41TvY" name="Filter">
     <GROUP id="{676FAC57-6CFF-B214-259A-527042544F24}" name="Source">
       <FILE id="WAIBpy" name="PluginProcessor.cpp" compile="1" resource="0"
