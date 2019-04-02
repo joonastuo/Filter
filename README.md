@@ -15,7 +15,3 @@ Filter plugin made with JUCE. A screenshot of the plugin can be seen below.
 - FIlter design: JUCE StateVariableFilter
 - Graph of magnitude response
 - Resizable
-
-## Future features
-- Implement state variable filter in filter-class
-- LFO
