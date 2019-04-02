@@ -14,15 +14,13 @@
 //==============================================================================
 MagView::MagView(AudioProcessorValueTreeState& vt) : mParameters(vt), mFFT(fftOrder)
 {
-	// Mag view size
-	//setSize(getHeight() / 1.8f, getWidth());
-	// Start update timer
+	// Timer to update filter magnitude response graph
 	startTimer(10.f);
 }
 
 MagView::~MagView()
 {
-
+	// Empty destructor
 }
 
 //==============================================================================
@@ -40,10 +38,10 @@ void MagView::paint (Graphics& g)
 	float fftLen = fftSize / 2.f;
 	// Sampling frequency
     float fs = mParameters.state[IDs::fs];
-	// Start point in x-axis (20 Hz)
-    float minX  = log10(20.f * pow(2.f, fftOrder) / fs);
-	// Scale x-axis so that start is at 20 Hz and end at fs / 2
-	float scaleX = getWidth() / (log10(fftLen) - minX) ;
+	// Start point in x-axis (20 Hz to bins and then to log scale)
+    float minX  = log10(20.f * (static_cast<float>(fftSize) / fs));
+	// Scale x-axis so that start is at 20 Hz and end at 20 000 Hz
+	float scaleX = getWidth() / (log10(20000.f * (static_cast<float>(fftSize) / fs)) - minX);
 	// Scale y-axis from -12 dB to 12 dB
 	float maxY = 12.f;
 	float scaleY = (getHeight() / 2.f) / maxY;
@@ -51,7 +49,7 @@ void MagView::paint (Graphics& g)
 	float endY = 0.f;
 	bool startFound = false;
 
-	// Paint markers
+	// Paint markers if the graph is large enough
 	if (getHeight() > 100.f)
 		paintMarkers(g, scaleX, minX, fs);
     
@@ -64,7 +62,7 @@ void MagView::paint (Graphics& g)
 	{
 		// X scaled for window size and log10 scale
 		endX = i == 0 ? 0.f : (log10(i) - minX) * scaleX;
-		endY = (getHeight() / 2.f - maxY * log10(mFilteredImpulse[i]) * scaleY) ;
+		endY = getHeight() / 2.f - Decibels::gainToDecibels(mFilteredImpulse[i]) * scaleY ;
 		
 		// Start of the path
 		if (startFound == false && (endY > 0.f && endY < getHeight() + 20.f))
@@ -113,7 +111,7 @@ void MagView::paintMarkers(Graphics& g, float scaleX, float minX, float fs)
     for (auto i = 0; i < 26; ++i)
     {
 		// X scaled for window size and log10 scale
-        float markX = (log10(((freq[i]) * pow(2.f, fftOrder)) / fs) - minX) * scaleX;
+        float markX = (log10(freq[i] * fftSize / fs) - minX) * scaleX;
 
 		// Draw solid lines to 100, 1000 and 10 000
         if (freq[i] == 100 || freq[i] == 1000 || freq[i] == 10000)
@@ -142,6 +140,7 @@ void MagView::paintMarkers(Graphics& g, float scaleX, float minX, float fs)
 
 void MagView::resized()
 {
+	// Empty resized method
 }
 
 //==============================================================================
@@ -149,28 +148,20 @@ void MagView::resized()
 void MagView::updateFilter()
 {
 	// Filter parameters from plugin ValueTree
-	float fc = *mParameters.getRawParameterValue("fc");
-	float res = *mParameters.getRawParameterValue("res");
-	float fs = mParameters.state[IDs::fs];
-	float filterType = *mParameters.getRawParameterValue("filterType");
+	const float fc =	   *mParameters.getRawParameterValue(IDs::filterFrequency);
+	const float res =	   *mParameters.getRawParameterValue(IDs::resonance);
+	const int filterType = *mParameters.getRawParameterValue(IDs::filterType);
+	const float fs =		mParameters.state[IDs::fs];
 
-	// Set filter fs, fc and res
 	mStateVariableFilter.parameters->setCutOffFrequency(fs, fc, res);
 
-	// Low pass filter
-	if (filterType == 0)
+	switch (filterType)
 	{
-		mStateVariableFilter.parameters->type = dsp::StateVariableFilter::Parameters<float>::Type::lowPass;
-	}
-	// High pass filter
-	else if (filterType == 1)
-	{
-		mStateVariableFilter.parameters->type = dsp::StateVariableFilter::Parameters<float>::Type::highPass;
-	}
-	// Band pass filter
-	else if (filterType == 2)
-	{
-		mStateVariableFilter.parameters->type = dsp::StateVariableFilter::Parameters<float>::Type::bandPass;
+	case lowpass:  mStateVariableFilter.parameters->type = dsp::StateVariableFilter::Parameters<float>::Type::lowPass;  break;
+	case highpass: mStateVariableFilter.parameters->type = dsp::StateVariableFilter::Parameters<float>::Type::highPass; break;
+	case bandpass: mStateVariableFilter.parameters->type = dsp::StateVariableFilter::Parameters<float>::Type::bandPass; break;
+	default:
+		break;
 	}
 }
 
@@ -179,18 +170,20 @@ void MagView::updateFilter()
 void MagView::timerCallback()
 {
 	// Repaint filter magnitude response if filter parameters have changed.
-	float fc = *mParameters.getRawParameterValue("fc");
-	float res = *mParameters.getRawParameterValue("res");
-	float selectFilter = *mParameters.getRawParameterValue("filterType");
+	float fc =			 *mParameters.getRawParameterValue(IDs::filterFrequency);
+	float res =			 *mParameters.getRawParameterValue(IDs::resonance);
+	float selectFilter = *mParameters.getRawParameterValue(IDs::filterType);
 	
+	// Check if values have changed
 	if (fc != mOldFc || res != mOldRes || selectFilter != mOldSelect)
 	{
 		updateFilter();
 		calcMagResponse();
 		repaint();
 	}
-	mOldFc = fc;
-	mOldRes = res;
+	// Current values as old values
+	mOldFc	   = fc;
+	mOldRes	   = res;
 	mOldSelect = selectFilter;
 }
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="as3rqd" name="Filter" projectType="audioplug" jucerVersion="5.3.2">
+<JUCERPROJECT id="as3rqd" name="Filter" projectType="audioplug" jucerVersion="5.4.3"
+              pluginFormats="buildAU,buildStandalone,buildVST,buildVST3">
   <MAINGROUP id="w41TvY" name="Filter">
     <GROUP id="{676FAC57-6CFF-B214-259A-527042544F24}" name="Source">
       <FILE id="WAIBpy" name="PluginProcessor.cpp" compile="1" resource="0"
@@ -10,9 +11,11 @@
       <FILE id="bRQ90I" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="vnbuKR" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
-      <GROUP id="{396DC68F-22D2-1D98-D32A-846FB857794E}" name="DSP">
-        <FILE id="icF8kq" name="Filter.cpp" compile="1" resource="0" file="Source/Filter.cpp"/>
-        <FILE id="pVOpFk" name="Filter.h" compile="0" resource="0" file="Source/Filter.h"/>
+      <GROUP id="{396DC68F-22D2-1D98-D32A-846FB857794E}" name="AudioDSP">
+        <FILE id="eEr1Wd" name="StateVariableFilterWrapper.cpp" compile="1"
+              resource="0" file="Source/AudioDSP/StateVariableFilterWrapper.cpp"/>
+        <FILE id="NrUfx4" name="StateVariableFilterWrapper.h" compile="0" resource="0"
+              file="Source/AudioDSP/StateVariableFilterWrapper.h"/>
       </GROUP>
       <GROUP id="{201C6098-B9CB-FF21-83E3-D33F07951F1D}" name="Components">
         <FILE id="AYECgh" name="MagView.cpp" compile="1" resource="0" file="Source/MagView.cpp"/>

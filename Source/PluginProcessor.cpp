@@ -22,38 +22,53 @@ FilterAudioProcessor::FilterAudioProcessor()
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
                      #endif
                        ),
-	mParameters(*this, nullptr),
-	myFilter(mParameters)
+	   mState(*this, nullptr, Identifier("StateVariableFiler"), 
+		   {
+				std::make_unique<AudioParameterFloat>(IDs::filterFrequency,
+													  NAMEs::Freq,
+													  NormalisableRange<float>(20.f, 20000.f, .01f, 0.2299),
+													  1000.f,
+													  String(),
+													  AudioProcessorParameter::genericParameter,
+													  [](float value, int maxStringLength) {return static_cast<String>(round(value * 100.f) / 100.f); },
+													  [](const String& text) {return text.getFloatValue(); }
+													   ),
+				std::make_unique<AudioParameterFloat>(IDs::resonance,
+													  NAMEs::Res,
+													  NormalisableRange<float>(0.5f, 5.f),
+													  0.707f,
+													  String(),
+													  AudioProcessorParameter::genericParameter,
+													  [](float value, int maxStringLength) {return static_cast<String>(round(value * 100.f) / 100.f); },
+													  [](const String& text) {return text.getFloatValue(); }
+													   ),
+				std::make_unique<AudioParameterFloat>(IDs::filterType,
+													  NAMEs::Type,
+													  NormalisableRange<float> (FilterType::lowpass, FilterType::bandpass),
+													  FilterType::lowpass,
+													  String(),
+													  AudioProcessorParameter::genericParameter,
+													  nullptr,
+												      nullptr
+													   )
+		   }),
+	   mStateVariableFilter(mState)
 #endif
 {
-	initialiseValueTree();
+	initialiseParameters();
 }
 
-void FilterAudioProcessor::initialiseValueTree()
-{
-	// Range of filter centre frequency (20 - 20 000 Hz)
-	NormalisableRange<float> fcRange(20.f, 20000.f);
-	// Range of filter resonance
-	NormalisableRange<float> resRange(0.5f, 5.f);
-	// Range of filter type selection (0=LP, 1=HP, 2=BP)
-	NormalisableRange<float> selectRange(0, 2);
-	// Add centre frequency to ValueTree
-	mParameters.createAndAddParameter("fc", "Freq", String(), fcRange, 1000.f, nullptr, nullptr);
-	// Add resonance to ValueTree
-	mParameters.createAndAddParameter("res", "Res", String(), resRange, 1.f, nullptr, nullptr);
-	// Add filter type selection to ValueTree
-	mParameters.createAndAddParameter("filterType", "FilterType" , String(), selectRange, 0, nullptr, nullptr);
-	// Initialise ValueTree
-	mParameters.state = ValueTree("FilterParameters");
-	// Set sampling frequency as a value tree parameter
-	// so it can be accessed trought mParameters.state
-	mParameters.state.setProperty(IDs::fs, 44100.f, nullptr);
-}
 
 FilterAudioProcessor::~FilterAudioProcessor()
 {
+	// Empty destructor
 }
 
+//==============================================================================
+void FilterAudioProcessor::initialiseParameters()
+{
+	mState.state.setProperty(IDs::fs, 44100.f, nullptr);
+}
 //==============================================================================
 const String FilterAudioProcessor::getName() const
 {
@@ -119,17 +134,12 @@ void FilterAudioProcessor::changeProgramName (int index, const String& newName)
 //==============================================================================
 void FilterAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-	// Set current sampling rate as fs in ValueTree
-	mParameters.state.setProperty(IDs::fs, sampleRate, nullptr);
-	// Structure containing information needed by the filter
-	// passed to the filter with prepare(spec)
+	mState.state.setProperty(IDs::fs, sampleRate, nullptr);
 	dsp::ProcessSpec spec;
 	spec.sampleRate = sampleRate;
 	spec.maximumBlockSize = samplesPerBlock;
 	spec.numChannels = getTotalNumOutputChannels();
 	mStateVariableFilter.prepare(spec);
-	// Reset filters processing pipeline
-	mStateVariableFilter.reset();
 }
 
 void FilterAudioProcessor::releaseResources()
@@ -164,68 +174,14 @@ bool FilterAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) c
 
 void FilterAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-	float fs = mParameters.state[IDs::fs];
-	mTLFO = mTLFO + buffer.getNumSamples() * (1.f / fs);
-	// Buffer into an audio block
-	dsp::AudioBlock<float> block(buffer);
-	// Update filter
-	updateFilter();
-	// Apply current design of StateVariableFilter to input buffer
-	mStateVariableFilter.process(dsp::ProcessContextReplacing <float>(block));
+	ScopedNoDenormals noDenormals;
+	auto totalNumInputChannels = getTotalNumInputChannels();
+	auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-	// Apply own filter
-	//float numSamples = buffer.getNumSamples();
-	//
-	//for (auto channel = 0; channel < getTotalNumInputChannels(); ++channel)
-	//{
-	//	const float* input = buffer.getReadPointer(channel);
-	//	float* output = buffer.getWritePointer(channel);
+	for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
+		buffer.clear(i, 0, buffer.getNumSamples());
 
-	//	for (auto sample = 0; sample < numSamples; ++sample)
-	//	{
-	//		output[sample] = myFilter.process(input[sample], channel);
-	//	}
-	//}
-}
-
-void FilterAudioProcessor::updateFilter()
-{
-	// Centre frequency 
-	float fc = *mParameters.getRawParameterValue("fc");
-
-	// LFO
-	//float A = fc * (1.059463 - 1);
-	//fc = fc + A * sin(2 * M_PI * mFreqLFO * mTLFO);
-	//if (fc < 20)
-	//	fc = 20;
-	//if (fc > 20000)
-	//	fc = 20000;
-		
-	// Resonance
-	float res = *mParameters.getRawParameterValue("res");
-	// Sampling frequency
-	float fs = mParameters.state[IDs::fs];
-	// Filter type
-	float filterType = *mParameters.getRawParameterValue("filterType");
-
-	// Set filter fs, fc and res
-	mStateVariableFilter.state->setCutOffFrequency(fs, fc, res);
-
-	// Low pass filter
-	if (filterType == 0)
-	{
-		mStateVariableFilter.state->type = dsp::StateVariableFilter::Parameters<float>::Type::lowPass;
-	}
-	// High pass filter
-	else if (filterType == 1)
-	{
-		mStateVariableFilter.state->type = dsp::StateVariableFilter::Parameters<float>::Type::highPass;
-	}
-	// Band pass filter
-	else if (filterType == 2)
-	{
-		mStateVariableFilter.state->type = dsp::StateVariableFilter::Parameters<float>::Type::bandPass;
-	}
+	mStateVariableFilter.process(buffer);
 }
 
 //==============================================================================
@@ -242,7 +198,7 @@ AudioProcessorEditor* FilterAudioProcessor::createEditor()
 //==============================================================================
 void FilterAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
-	auto state = mParameters.copyState();
+	auto state = mState.copyState();
 	std::unique_ptr<XmlElement> xml(state.createXml());
 	copyXmlToBinary(*xml, destData);
 }
@@ -252,15 +208,15 @@ void FilterAudioProcessor::setStateInformation (const void* data, int sizeInByte
 	std::unique_ptr<XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
 
 	if (xmlState.get() != nullptr)
-		if (xmlState->hasTagName(mParameters.state.getType()))
-			mParameters.replaceState(ValueTree::fromXml(*xmlState));
+		if (xmlState->hasTagName(mState.state.getType()))
+			mState.replaceState(ValueTree::fromXml(*xmlState));
 }
 
 //==============================================================================
 // Return a reference of filter parameters
 AudioProcessorValueTreeState & FilterAudioProcessor::getState()
 {
-	return mParameters;
+	return mState;
 }
 
 
