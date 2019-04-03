@@ -3,7 +3,7 @@ Filter
 
 Filter plugin made with JUCE. A screenshot of the plugin can be seen below.
 
-<p align="center">
+<p align="left">
 	<img src="Images/filter.png" width="250">
 </p>
 			
