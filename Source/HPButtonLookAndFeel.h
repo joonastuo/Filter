@@ -17,11 +17,11 @@
 class HPButtonLookAndFeel : public LookAndFeel_V4
 {
 public:
-	void drawButtonBackground(Graphics& g, Button& button, const Colour& backgroundColour, bool isMouseOverButton, bool isButtonDown) override
+	void drawButtonBackground(Graphics& g, Button& button, const Colour& backgroundColour, bool, bool) override
 	{
 		// Button width and height
-		float width = button.getWidth();
-		float height = button.getHeight();
+		float width = static_cast<float>(button.getWidth());
+		float height = static_cast<float>(button.getHeight());
 
 		// Path of button outline
 		Path buttonPath;

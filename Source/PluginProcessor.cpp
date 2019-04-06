@@ -26,11 +26,11 @@ FilterAudioProcessor::FilterAudioProcessor()
 		   {
 				std::make_unique<AudioParameterFloat>(IDs::filterFrequency,
 													  NAMEs::Freq,
-													  NormalisableRange<float>(20.f, 20000.f, .01f, 0.2299),
+													  NormalisableRange<float>(20.f, 20000.f, .01f, 0.2299f),
 													  1000.f,
 													  String(),
 													  AudioProcessorParameter::genericParameter,
-													  [](float value, int maxStringLength) {return static_cast<String>(round(value * 100.f) / 100.f); },
+													  [](float value, int) {return static_cast<String>(round(value * 100.f) / 100.f); },
 													  [](const String& text) {return text.getFloatValue(); }
 													   ),
 				std::make_unique<AudioParameterFloat>(IDs::resonance,
@@ -39,7 +39,7 @@ FilterAudioProcessor::FilterAudioProcessor()
 													  0.707f,
 													  String(),
 													  AudioProcessorParameter::genericParameter,
-													  [](float value, int maxStringLength) {return static_cast<String>(round(value * 100.f) / 100.f); },
+													  [](float value, int) {return static_cast<String>(round(value * 100.f) / 100.f); },
 													  [](const String& text) {return text.getFloatValue(); }
 													   ),
 				std::make_unique<AudioParameterFloat>(IDs::filterType,

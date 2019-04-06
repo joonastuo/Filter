@@ -15,7 +15,7 @@
 MagView::MagView(AudioProcessorValueTreeState& vt) : mParameters(vt), mFFT(fftOrder)
 {
 	// Timer to update filter magnitude response graph
-	startTimer(10.f);
+	startTimer(10);
 }
 
 MagView::~MagView()
@@ -28,8 +28,8 @@ MagView::~MagView()
 void MagView::paint (Graphics& g)
 {
 	// Rounded rectangle around the graph with same but darker colour as the background
-    g.setColour (getLookAndFeel().findColour(ResizableWindow::backgroundColourId).darker(.8));
-    g.fillRoundedRectangle (0, 0, getWidth(), getHeight(), 10.f);   // draw an outline around the component
+    g.setColour (getLookAndFeel().findColour(ResizableWindow::backgroundColourId).darker(.8f));
+    g.fillRoundedRectangle (0.f, 0.f, static_cast<float>(getWidth()), static_cast<float>(getHeight()), 10.f);   // draw an outline around the component
 
 	// Graph frequency response====================================
 	
@@ -61,7 +61,7 @@ void MagView::paint (Graphics& g)
 	for (auto i = 0; i < fftLen; ++i)
 	{
 		// X scaled for window size and log10 scale
-		endX = i == 0 ? 0.f : (log10(i) - minX) * scaleX;
+		endX = i == 0 ? 0.f : static_cast<float>((log10(i) - minX) * scaleX);
 		endY = getHeight() / 2.f - Decibels::gainToDecibels(mFilteredImpulse[i]) * scaleY ;
 		
 		// Start of the path
@@ -94,7 +94,9 @@ void MagView::paintMarkers(Graphics& g, float scaleX, float minX, float fs)
 
 	for (auto i = 1; i < 8; ++i)
 	{
-		Line<float> horizontalLine (0.f, getHeight() * (i / 8.f), getWidth(), getHeight() * (i / 8.f));
+		float width = static_cast<float> (getWidth());
+		float height = static_cast<float> (getHeight());
+		Line<float> horizontalLine (0.f, height * (i / 8.f), width, height * (i / 8.f));
 		if (i == 4)
 			g.drawLine(horizontalLine, .5f);
 		else
@@ -116,22 +118,22 @@ void MagView::paintMarkers(Graphics& g, float scaleX, float minX, float fs)
 		// Draw solid lines to 100, 1000 and 10 000
         if (freq[i] == 100 || freq[i] == 1000 || freq[i] == 10000)
         {
-			g.drawLine(markX, 0.f, markX, getHeight(),.5f);
+			g.drawLine(markX, 0.f, markX, static_cast<float>(getHeight()),.5f);
 			g.setColour(Colours::white);
 			// Text indicating frequencies
             if (freq[i] == 100)
-                g.drawText("100", markX - 9.f, getHeight() - 10.f, 30.f, 10.f, Justification::centred);
+                g.drawText("100", static_cast<int>(markX - 9), getHeight() - 10, 30, 10, Justification::centred);
             else if (freq[i] == 1000)
-                g.drawText("1k", markX - 9.f, getHeight() - 10.f, 20.f, 10.f, Justification::centred);
+                g.drawText("1k", static_cast<int>(markX - 9), getHeight() - 10, 20, 10, Justification::centred);
             else if (freq[i] == 10000)
-                g.drawText("10k", markX - 9.f, getHeight() - 10.f, 30.f, 10.f, Justification::centred);
+                g.drawText("10k", static_cast<int>(markX - 9), getHeight() - 10, 30, 10, Justification::centred);
 
 			g.setColour(Colours::white.darker(.8f));
         }
 		else
 		{
 			// Paint line
-            g.drawDashedLine(Line<float>(markX, 0.f, markX, getHeight()), myDash, 2, 1.f);
+            g.drawDashedLine(Line<float>(markX, 0.f, markX, static_cast<float>(getHeight())), myDash, 2, 1.f);
 		}
     }
 }
@@ -150,7 +152,7 @@ void MagView::updateFilter()
 	// Filter parameters from plugin ValueTree
 	const float fc =	   *mParameters.getRawParameterValue(IDs::filterFrequency);
 	const float res =	   *mParameters.getRawParameterValue(IDs::resonance);
-	const int filterType = *mParameters.getRawParameterValue(IDs::filterType);
+	const int filterType = static_cast<int>(*mParameters.getRawParameterValue(IDs::filterType));
 	const float fs =		mParameters.state[IDs::fs];
 
 	mStateVariableFilter.parameters->setCutOffFrequency(fs, fc, res);
