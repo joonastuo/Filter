@@ -1,7 +1,7 @@
 Filter
 ======
 
-Filter plugin made with JUCE. A screenshot of the plugin can be seen below.
+Filter plugin made with JUCE(v.5.4.3). A screenshot of the plugin can be seen below.
 
 <p align="left">
 	<img src="Images/filter.png" width="250">
