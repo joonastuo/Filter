@@ -23,10 +23,10 @@ FilterAudioProcessorEditor::FilterAudioProcessorEditor (FilterAudioProcessor& p)
 	// Initialise GUI elements
 	initialiseGUI();
 	this->setResizable(true, true);
-	float maxWidth = 600.f;
-	float maxHeight = 400.f;
+	int maxWidth = 600;
+	int maxHeight = 400;
 	this->setResizeLimits(160, 160, maxWidth, maxHeight);
-    setSize (566.f, 372.f);
+    setSize (566, 372);
 }
 
 FilterAudioProcessorEditor::~FilterAudioProcessorEditor() 
@@ -49,7 +49,7 @@ void FilterAudioProcessorEditor::initialiseGUI()
 
 	//Slider
 	mFreqSlider.setSliderStyle(Slider::SliderStyle::Rotary);
-	mFreqSlider.setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxBelow, false, 50.f, 14.f);
+	mFreqSlider.setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 14);
 	mFreqSlider.setTextValueSuffix(" Hz");
 	mFreqSlider.setLookAndFeel(&knobLookAndFeel);
 	addAndMakeVisible(mFreqSlider);
@@ -65,7 +65,7 @@ void FilterAudioProcessorEditor::initialiseGUI()
 
 	//Slider
 	mResSlider.setSliderStyle(Slider::SliderStyle::Rotary);
-	mResSlider.setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxBelow, false, 50.f, 14.f);
+	mResSlider.setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxBelow, false, 50, 14);
 	mResSlider.setLookAndFeel(&knobLookAndFeel);
 	addAndMakeVisible(mResSlider);
 	mResAttachment.reset(new SliderAttachment(mParameters, IDs::resonance, mResSlider));
@@ -78,8 +78,8 @@ void FilterAudioProcessorEditor::initialiseGUI()
 	addAndMakeVisible(mFilterTypeLabel);
 
 	// Buttons
-	float buttonWidth  = 20.f;
-	float buttonHeight = 15.f;
+	int buttonWidth  = 20;
+	int buttonHeight = 15;
 	// LP
 	mLPButton.setSize(buttonWidth, buttonHeight);
 	mLPButton.setLookAndFeel(&mLPButtonLookAndFeel);
@@ -100,12 +100,12 @@ void FilterAudioProcessorEditor::initialiseGUI()
 	addAndMakeVisible(mBPButton);
 
 	// Initial filter type
-	int filterType = *mParameters.getRawParameterValue(IDs::filterType);
+	int filterType = static_cast<int>(*mParameters.getRawParameterValue(IDs::filterType));
 	switch (filterType)
 	{
-	case lowpass:  mLPButton.setToggleState(true, true); break;
-	case highpass: mHPButton.setToggleState(true, true); break;
-	case bandpass: mBPButton.setToggleState(true, true); break;
+	case lowpass:  mLPButton.setToggleState(true, sendNotification); break;
+	case highpass: mHPButton.setToggleState(true, sendNotification); break;
+	case bandpass: mBPButton.setToggleState(true, sendNotification); break;
 	default:
 		break;
 	}
@@ -123,13 +123,12 @@ void FilterAudioProcessorEditor::resized()
 	// GUI parameters===============================================
 
 	// GUI area
-	auto area = getLocalBounds().reduced(10.f, 10.f);
+	auto area = getLocalBounds().reduced(10, 10);
 
 	// MagView
 	float magViewRatio = mMagViewRatio;
 	float magViewMinHeight = 80.f;
 	float magViewMinWidth = magViewMinHeight * magViewRatio;
-	float magViewHeight = (area.getWidth() / magViewRatio);
 	
 	//Knobs
 	float knobWidth = 60.f;
@@ -151,7 +150,7 @@ void FilterAudioProcessorEditor::resized()
 	bool magViewPortraitCondition = area.getHeight() - parameterHeight > magViewMinHeight;
 	bool magViewLandscapeCondition = area.getWidth() - parameterWidth - spaceBetween > magViewMinWidth;
 
-	float magViewPortraitWidth = area.getWidth();
+	float magViewPortraitWidth = static_cast<float>(area.getWidth());
 	float magViewPortraitHeight = magViewPortraitWidth / magViewRatio;
 
 	float magViewLandscapeWidth = area.getWidth() - parameterWidth - spaceBetween;
@@ -222,8 +221,8 @@ void FilterAudioProcessorEditor::resized()
 			magBox.items.add(FlexItem(mMagView).withWidth (magViewPortraitWidth).withHeight (magViewPortraitHeight));
 			
 			mMagView.setVisible(true);
-			masterBox.items.addArray({ FlexItem(magBox).withWidth(area.getWidth()).withHeight(magViewPortraitHeight),
-									   FlexItem(parameterBox).withWidth(area.getWidth()).withHeight(parameterHeight + parameterBoxSpace) });
+			masterBox.items.addArray({ FlexItem(magBox).withWidth(static_cast<float>(area.getWidth())).withHeight(magViewPortraitHeight),
+									   FlexItem(parameterBox).withWidth(static_cast<float>(area.getWidth())).withHeight(parameterHeight + parameterBoxSpace) });
 		}
 		else
 		{
@@ -248,13 +247,13 @@ void FilterAudioProcessorEditor::resized()
 			// MagView box
 			magBox.items.add(FlexItem(mMagView).withWidth (magViewLandscapeWidth).withHeight (magViewLandscapeHeight));
 			
-			masterBox.items.addArray({ FlexItem(magBox).withWidth(magViewLandscapeWidth).withHeight(area.getHeight()),
-									   FlexItem(parameterBox).withWidth(parameterWidth + parameterBoxSpace).withHeight(area.getHeight()) });
+			masterBox.items.addArray({ FlexItem(magBox).withWidth(magViewLandscapeWidth).withHeight(static_cast<float>(area.getHeight())),
+									   FlexItem(parameterBox).withWidth(parameterWidth + parameterBoxSpace).withHeight(static_cast<float>(area.getHeight())) });
 		}
 		else
 		{
 			mMagView.setVisible(false);
-			masterBox.items.addArray({ FlexItem(parameterBox).withWidth(parameterWidth).withHeight(area.getHeight()) });
+			masterBox.items.addArray({ FlexItem(parameterBox).withWidth(parameterWidth).withHeight(static_cast<float>(area.getHeight())) });
 		}
 	}
 	// Perform layout
@@ -273,18 +272,18 @@ void FilterAudioProcessorEditor::buttonClicked(Button* b)
 		{
 			if (mHPButton.getToggleState())
 			{
-				mHPButton.setToggleState(false, false);
-				mLPButton.setToggleState(true, false);
+				mHPButton.setToggleState(false, dontSendNotification);
+				mLPButton.setToggleState(true, dontSendNotification);
 			}
 			if (mBPButton.getToggleState())
 			{
-				mBPButton.setToggleState(false, false);
-				mLPButton.setToggleState(true, false);
+				mBPButton.setToggleState(false, dontSendNotification);
+				mLPButton.setToggleState(true, dontSendNotification);
 			}
 		}
 		else
 		{
-			mLPButton.setToggleState(true, false);
+			mLPButton.setToggleState(true, dontSendNotification);
 		}
 	}
 	if (b == &mHPButton)
@@ -294,18 +293,18 @@ void FilterAudioProcessorEditor::buttonClicked(Button* b)
 		{
 			if (mLPButton.getToggleState())
 			{
-				mLPButton.setToggleState(false, false);
-				mHPButton.setToggleState(true, false);
+				mLPButton.setToggleState(false, dontSendNotification);
+				mHPButton.setToggleState(true, dontSendNotification);
 			}
 			if (mBPButton.getToggleState())
 			{
-				mBPButton.setToggleState(false, false);
-				mHPButton.setToggleState(true, false);
+				mBPButton.setToggleState(false, dontSendNotification);
+				mHPButton.setToggleState(true, dontSendNotification);
 			}
 		}
 		else
 		{
-			mHPButton.setToggleState(true, false);
+			mHPButton.setToggleState(true, dontSendNotification);
 		}
 	}
 	if (b == &mBPButton)
@@ -315,18 +314,18 @@ void FilterAudioProcessorEditor::buttonClicked(Button* b)
 		{
 			if (mLPButton.getToggleState())
 			{
-				mLPButton.setToggleState(false, false);
-				mBPButton.setToggleState(true, false);
+				mLPButton.setToggleState(false, dontSendNotification);
+				mBPButton.setToggleState(true, dontSendNotification);
 			}
 			if (mHPButton.getToggleState())
 			{
-				mHPButton.setToggleState(false, false);
-				mBPButton.setToggleState(true, false);
+				mHPButton.setToggleState(false, dontSendNotification);
+				mBPButton.setToggleState(true, dontSendNotification);
 			}
 		}
 		else
 		{
-			mBPButton.setToggleState(true, false);
+			mBPButton.setToggleState(true, dontSendNotification);
 		}
 	}
 }

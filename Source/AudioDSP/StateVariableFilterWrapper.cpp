@@ -38,7 +38,7 @@ void StateViableFilterWrapper::update()
 {
 	const float fc =	   *mState.getRawParameterValue(IDs::filterFrequency);
 	const float res =	   *mState.getRawParameterValue(IDs::resonance);
-	const int filterType = *mState.getRawParameterValue(IDs::filterType);
+	const int filterType = static_cast<int>(*mState.getRawParameterValue(IDs::filterType));
 	const float fs =		mState.state[IDs::fs];
 
 	mStateVariableFilter.state->setCutOffFrequency(fs, fc, res);
